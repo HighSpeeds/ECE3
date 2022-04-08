@@ -1,0 +1,39 @@
+\documentclass[12pt]{article}
+\title{ECE 3 Lab 2 Prelab}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+\section*{Problem 1}
+\begin{align*}
+\text{RMS}&=\sqrt{\frac{1}{T}\int_{0}^{T}f^2(t)dt}\\
+&=\sqrt{\frac{1}{T}\int_{0}^{T}a^2dt}\\
+&=\sqrt{a^2}=a
+\end{align*}
+\begin{align*}
+V_{pp}&=2a
+\end{align*}
+$$\frac{\text{RMS}}{V_{pp}}=\boxed{\frac{1}{2}}$$
+\section*{Problem 2}
+\begin{align*}
+\text{RMS}&=\sqrt{\frac{1}{T}\int_{0}^{T}f^2(t)dt}\\
+&=\sqrt{\frac{2}{T}\left(\int_{0}^{\frac{T}{4}}\left(\frac{4at}{T}\right)^2dt+\int_{\frac{T}{4}}^{\frac{T}{2}}\left(\frac{4a(\frac{T}{2}-t)}{T}\right)^2dt\right)}\\
+&=\frac{4a}{T}\sqrt{\frac{2}{T}\left(\frac{\left(\frac{T}{4}\right)^3}{3}+\frac{\left(\frac{T}{4}\right)^3}{3}\right)}\\
+&=\frac{4a}{T}\sqrt{\frac{2}{T}\left(\frac{\left(\frac{T}{4}\right)^3}{3}+\frac{\left(\frac{T}{4}\right)^3}{3}\right)}\\
+&=\frac{a}{\sqrt{3}}
+\end{align*}
+\begin{align*}
+V_{pp}&=2a
+\end{align*}
+$$\frac{\text{RMS}}{V_{pp}}=\boxed{\frac{1}{2\sqrt{3}}}$$
+\section*{Problem 3}
+wrong Probe Attenuation 
+\section*{Problem 4}
+Wrong Function Generator Output Impedance
+\section*{Problem 5}
+To filter out the DC components.
+\end{document}

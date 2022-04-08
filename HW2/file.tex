@@ -1,0 +1,27 @@
+\documentclass[12pt]{article}
+\title{ECE 3 HW 2}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+
+From KCL we have that at node V6
+
+$$\frac{6-B}{3}+\frac{6-A}{5}=1.7111$$
+Likewise at node A
+$$I_R+\frac{A-B}{14}=\frac{6-A}{5}$$
+And at node B
+$$\frac{A-B}{14}+\frac{6-
+B}{3}=\frac{B}{2}$$
+Solving these system of equation we get
+
+$$A=3.323V$$
+$$B=2.4729V$$
+$$I_R=0.4747$$
+Therefore we have
+$$R=\frac{A}{I_R}=\boxed{7\Omega}$$
+\end{document}
