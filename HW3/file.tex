@@ -1,0 +1,32 @@
+\documentclass[12pt]{article}
+\title{ECE 3 HW 3}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+With $V_4$ as the reference node we have
+$$V_2=16V$$
+And from KCL, the following equations for $V_1$ and $V_3$
+$$\frac{16-V_1}{5}+\frac{V_3-V_1}{7}=1$$
+$$0.5=\frac{V_3-V_1}{7}+\frac{V_3}{6}$$
+Solving these we get
+$$V_1=8.778V$$
+$$V_3=5.667V$$
+We have that the current flowing into $V_4$ is 
+$$1+\frac{V_3}{6}=\boxed{1.945A}$$
+From KCL this must be the magnitude of the current flowing across the battery, from $V_4$ to $V_2$\\\\
+Now with $V_2$ as the reference node we have\\\\
+If $V_2$ is the ground node, then we must have that $V_4=-16V$, and we will from KCL have the following equations for $V_1$ and $V_3$
+
+$$\frac{-V_1}{5}+\frac{V_3-V_1}{7}=1$$
+$$0.5=\frac{V_3-V_1}{7}+\frac{V_3+16}{6}$$
+Solving these equations we get
+$$V_1=-7.222V$$
+$$V_3=-10.333V$$
+We have that the current flowing into $V_4$ is 
+$$1+\frac{V_3+16}{6}=\boxed{1.945A}$$From KCL this must be the magnitude of the current flowing across the battery, from $V_4$ to $V_2$
+\end{document}
