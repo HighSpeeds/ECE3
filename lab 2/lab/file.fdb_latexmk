@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1650001367 "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.tex" "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.pdf" "file" 1650001367
+["pdflatex"] 1650008354 "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.tex" "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.pdf" "file" 1650008354
   "/etc/texmf/web2c/texmf.cnf" 1649909990 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.aux" 1650001367 32 3985256e7290058c681f74d7a3565a19 ""
-  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.tex" 1650001367 1313 7beb82c840357c3f3555f706f1d95e2d ""
+  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.aux" 1650008354 32 044b7f8fc9779af7531264e0c5c84b6d ""
+  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.tex" 1650008354 3362 f5c4c801fae1f3f80976d59e056d5a5f ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -23,6 +23,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1248133631 32362 179c33bbf43f19adbb3825bb4e36e57a ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty" 1583617216 6501 4011d89d9621e0b0901138815ba5ff29 ""
   "/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty" 1575499628 8356 7bbb2c2373aa810be568c29e333da8ed ""
@@ -53,11 +54,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1613593815 38841 799d1dd9682a55ce442e10c99777ecc1 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1649909994 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1649910000 1283513 c2e5044cb807518df70de322c8400817 ""
-  "file.aux" 1650001367 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
-  "file.tex" 1650001367 1313 7beb82c840357c3f3555f706f1d95e2d ""
+  "file.aux" 1650008354 32 044b7f8fc9779af7531264e0c5c84b6d "pdflatex"
+  "file.tex" 1650008354 3362 f5c4c801fae1f3f80976d59e056d5a5f ""
   (generated)
-  "file.log"
-  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.pdf"
-  "file.aux"
   "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.log"
+  "file.log"
   "file.pdf"
+  "file.aux"
+  "/home/lawrence/Desktop/UCLA/Classes/ECE3/lab 2/lab/file.pdf"

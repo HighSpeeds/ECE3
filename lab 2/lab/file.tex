@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
-\title{ECE 3 Lab 2 Prelab}
+\title{ECE 3 Lab 2 Lab Report}
 
-\author{Lawrence Liu}
+\author{Lawrence Liu and Inesh Chakrabarti}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \setlength{\parindent}{0pt}
@@ -14,11 +14,11 @@
      \hline
      Waveform & Theoretical $V_{RMS}$ & Scope Measurments $V_{RMS}$ & Voltmeter Measurments $V_{RMS}$& Diffrence (\%) \\ [0.5ex] 
      \hline\hline
-     Sine & 1.77V & 1.7639V & 1.7645V &  -0.034\%\\
+     Sine & 1.77V & 1.7639V & 1.7645V &  0.034\%\\
      \hline
-     Triangle & 1.44V & 1.4325V & 1.4378V & -0.369\%\\
+     Triangle & 1.44V & 1.4325V & 1.4378V & 0.369\%\\
      \hline
-     Square & 2.5V & 2.4932V & 2.4823V & 0.439\%\\ 
+     Square & 2.5V & 2.4932V & 2.4823V & -0.439\%\\ 
      \hline
     \end{tabular}
 \end{center}
@@ -28,11 +28,62 @@
      \hline
      Waveform & Theoretical $V_{RMS}$ & Scope Measurments $V_{RMS}$ & Voltmeter Measurments $V_{RMS}$& Diffrence (\%) \\ [0.5ex] 
      \hline\hline
-     Sine & 1.77V & 1.7639V & 1.7645V &  -0.034\%\\
+     Sine & 1.77V & 1.7724V & 1.7224V &  -2.821\%\\
      \hline
-     Triangle & 1.44V & 1.4325V & 1.4378V & -0.369\%\\
+     Triangle & 1.44V & 1.4431V & 1.3956V & -3.292\%\\
      \hline
-     Square & 2.5V & 2.4932V & 2.4823V & 0.439\%\\ 
+     Square & 2.5V & 2.4916V & 2.3067V & -7.42\%\\ 
+     \hline
+    \end{tabular}
+\end{center}
+\section*{25KHz Measurments}
+\begin{center}
+    \begin{tabular}{|p{0.2\linewidth} | p{0.2\linewidth} |p{0.2\linewidth} |p{0.2\linewidth} |p{0.2\linewidth} |} 
+     \hline
+     Waveform & Theoretical $V_{RMS}$ & Scope Measurments $V_{RMS}$ & Voltmeter Measurments $V_{RMS}$& Diffrence (\%) \\ [0.5ex] 
+     \hline\hline
+     Sine & 1.77V & 1.7736V & 0.029V &  -98.319\%\\
+     \hline
+     Triangle & 1.44V & 1.4408V & 0.024V & -98.29\%\\
+     \hline
+     Square & 2.5V & 2.4952V & 0.041V & -98.34\%\\ 
+     \hline
+    \end{tabular}
+\end{center}
+
+\textbf{What's  your  observation  regarding  the  voltmeter/DMM  reading’s  accuracy  over  different 
+frequencies within the same waveform? Can you guess why that's the case? }
+The voltmeter became to perform worse at higher frequcies, because the capcitor setup int eh voltmeter and because the voltmeter sampling rate is set to 1s, both of these will act as a low pass filter, and mean that at higher frequcies, less of the actual wave is measured, thereforce causing the readings to become inacurate.
+\\\\
+\textbf{Does the voltmeter/DMM perform poorer when measuring square or triangular waves over sine 
+waves? Can you guess why that's the case? }
+The performance is worse with square wave, likely because 
+it contains more higher frequices, which the voltmeter cannot measure well.
+\section*{Square Wave Fourier Analysis}
+\begin{center}
+    \begin{tabular}{|p{0.3\linewidth} | p{0.3\linewidth} |p{0.3\linewidth} |} 
+     \hline
+     Nth Harmonic & Measured Values (dB) & Theoretical Values (dB)\\ [0.5ex] 
+     \hline\hline
+     1 & 0 & 0\\
+     \hline
+     2 & -86.360 & $-\infty$\\
+     \hline
+     3 & -9.867 & -9.542\\
+     \hline
+     4 & -94.256 & $-\infty$\\
+     \hline
+     5 & -13.9304 & -13.979\\
+     \hline
+     6 & -83.295 & $-\infty$\\
+     \hline
+     7 & -19.1605 & -16.90196\\
+     \hline
+     8 & -84.5246 & $-\infty$\\
+     \hline
+     9 & -19.1293 & -19.0848\\
+     \hline
+     10 & -85.7619 & $-\infty$\\
      \hline
     \end{tabular}
 \end{center}
