@@ -1,0 +1,39 @@
+\documentclass[12pt]{article}
+\title{ECE 3 HW 3}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+
+For the open circuit, let the voltage at the node be $V$, we have
+
+$$V=\frac{3I_x-V}{2}+I_x$$
+and
+$$I_x=\frac{10-V}{5}$$
+
+Solving these we get $I_x=1.5A$, therefore we would have that $V_{th}=10-3I_x=\boxed{5.5V}$
+
+Now we attach a resistor with resistance $R$ across the nodes, then we would still 
+have
+
+$$V=\frac{3I_x-V}{2}+I_x$$
+and
+$$I_x=\frac{10-V}{5}$$
+
+and thus we would have $I_x=1.5A$
+
+therefore the current flowing across the reistor is 
+$I_R=\frac{10-3Ix}{R}$
+
+Therefore we have
+$$I_{sc}=\lim_{R\to0}I_R=\infty$$
+
+Therefore we have
+
+$$R_{eq}=\frac{V_{th}}{I_{sc}}=\boxed{0}$$
+
+\end{document}
