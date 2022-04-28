@@ -1,5 +1,5 @@
 \documentclass[12pt]{article}
-\title{ECE 3 HW 3}
+\title{ECE 3 HW 5}
 
 \author{Lawrence Liu}
 \usepackage{graphicx}
@@ -17,10 +17,10 @@ $$v_1$$ across the capacitor
 $$4I_x=\frac{v_1}{Z_c}$$
 $$10-v_1=50I_x$$
 Solving them we get
-$$I_x=0.0031-0.0246j$$
-$$v_1=9.8462+1.2308j$$
+$$I_x=0.0031+0.0246j$$
+$$v_1=9.8462-1.2308j$$
 Therefore we have
-$$V_{oc}=10-(v_1+20\cdot3I_x)=\boxed{(-0.0308+0.2462j) V}$$
+$$V_{oc}=10-(v_1+20\cdot3I_x)=\boxed{(-0.0308-0.2462j) V}$$
 For the short circuit current we have the following equation
 $$I_x=\frac{10-v_1}{50}$$
 $$I_x+\frac{10-v_1}{20}=\frac{v_1}{Z_c}$$
@@ -30,6 +30,6 @@ $$v_1=(9.8-1.4j)V$$
 And we have the current across the short is
 $$I_{no}=\frac{10-v_1}{20}-3I_x=(-0.002-0.014j)A$$
 Therefore we have the equivalent resistance is
-$$R_{th}=\frac{V_{th}}{I_{no}}=\boxed{(-16.9231-4.6154j)\Omega}$$
+$$Z_{th}=\frac{V_{th}}{I_{no}}=\boxed{(17.5385+0.3077j)\Omega}$$
 
 \end{document}

@@ -1,0 +1,58 @@
+\documentclass[12pt]{article}
+\title{Impedence and Phasors Tutorial}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+
+\section*{Impedence of Circuit compents}
+
+\subsection*{Impedence of a Capacitor}
+A capacitor's IV relation is 
+$$i=C\frac{dv}{dt}$$
+Now let us consider an voltage that takes the form of $v=Ae^{j\omega t}$ where
+$j$ is the imaginary unit, ie $j=\sqrt{-1}$, $\omega$ is the frequency, and $A$ is a scaling factor, therefore we have
+$$i=C\frac{dv}{dt}=j\omega C Ae^{j\omega t}=j\omega Cv$$
+Rearangeing this we get
+$$i\frac{1}{j\omega C}=v$$
+This reminds us of ohms law! As a matter of fact we can generalize ohms law to AC ciruits, with the
+generalized version of resistance being impedence. In this case our impedence is
+$$Z_C=\frac{1}{j\omega C}$$
+\subsection*{Impedence of a Inductor}
+Let us repeat our derivation for the impedence of a capcitor, this time with an Inductor. We have
+that the IV relation for a inductor is
+$$v=L\frac{di}{dt}$$
+now let the current take the form $i=Ae^{j\omega t}$
+therefore we have
+$$v=j\omega L Ae^{j\omega t}=j\omega L i$$
+Therefore we have
+$$Z_L=j\omega L$$
+\subsection*{Impedence of a Resistor}
+The impedence of a resistor is easy, since we have for any $v$,
+$$v=iR$$
+$$Z_R=R$$
+\section*{Phasors}
+Let us consider an AC voltage source, with
+$$V=A\cos(\omega t+\theta)$$,
+adding on a imaginary compent $A j \sin(\omega t +\theta)$ we have
+$$A\cos(\omega t+\theta)+A i \sin(\omega t +\theta)=Ae^{j\omega t+j\theta}=Ae^{j\theta}e^{j\omega t}
+$$
+Let us define the value $Ae^{j\theta}$ to be the phasor, therefore for a AC voltage source
+$V=A\cos(\omega t+\theta)$, its corresponding phasor is $\underline{V}=Ae^{j\theta}$.\\
+\\
+Now lets consider an example of a AC voltage source
+$$V=10\sin(\omega t)$$
+How would we find the phasor for this source? well first of all from the trig identies, we know
+$\cos(\theta-\frac{\pi}{2})=\sin(\theta)$, therefore we can rewrite $V$ as 
+$$V=10\cos(\omega t-\frac{\pi}{2})$$
+
+Therefore adding on an imaginary compent $10j\cos(\omega t-\frac{\pi}{2})$ we get
+$$10\cos(\omega t-\frac{\pi}{2})+10j\cos(\omega t-\frac{\pi}{2})=10e^{j\omega t-\frac{\pi}{2}j}$$
+Therefore the corresponding phasor for this voltage source is $10e^{-j\frac{\pi}{2}}=-10j$
+
+Now what would the corresponding phasor be for the voltage source in the HW?
+\end{document}
