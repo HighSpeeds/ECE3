@@ -36,14 +36,14 @@ class Sensor_Array:
         self.X=start_X
         self.Y=start_Y
         self.orientation=np.radians(start_orientation)
-        print(self.orientation)
+        #print(self.orientation)
         self.sensors=sensors
         self.length=length
         self.calculateSensorLocs()
         
         
     def calculateSensorLocs(self):
-        print(np.cos(self.orientation))
+        #print(np.cos(self.orientation))
         self.sensorLocs=np.array([self.X+np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.sin(self.orientation),
                                 self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)]).T
         
@@ -57,6 +57,8 @@ class Sensor_Array:
         return sensor_values
     
     def update_loc(self,newX,newY,new_orientation):
+#         print(self.X)
+#         print(self.Y)
         self.X=newX
         self.Y=newY
         self.orientation=new_orientation
@@ -69,6 +71,7 @@ class Sensor_Array:
             ax.plot(sensor_loc[0],sensor_loc[1],"o",
                     label=f"sensor{i}",color=sensor_colors)
         ax.plot(self.sensorLocs[:,0],self.sensorLocs[:,1],color=line_color)
+        #ax.legend()
         
         
 class Car:
@@ -101,15 +104,16 @@ class Car:
         #calculate left motor position
         leftMotorX=self.X-self.motor_dist*np.sin(self.orientation)
         leftMotorY=self.Y+self.motor_dist*np.cos(self.orientation)
+        #print(f"old Left Motor, x={leftMotorX}, y={leftMotorY} leftMotorPercent={leftMotorPercent}")
         #update left motor position (this is an lazy estimation)
         leftMotorX+=leftMotorPercent/100*self.mPerToSpeed*np.cos(self.orientation)*time_step
         leftMotorY+=leftMotorPercent/100*self.mPerToSpeed*np.sin(self.orientation)*time_step
-        #print(f"Left Motor, x={leftMotorX}, y={leftMotorY} leftMotorPercent={leftMotorPercent}")
+        #print(f"new Left Motor, x={leftMotorX}, y={leftMotorY} leftMotorPercent={leftMotorPercent}")
         
         #calculate right motor position
         rightMotorX=self.X+self.motor_dist*np.sin(self.orientation)
         rightMotorY=self.Y-self.motor_dist*np.cos(self.orientation)
-        print(f"Right Motor, x={rightMotorX}, y={rightMotorY} rightMotorPercent={rightMotorPercent}")
+        #print(f"old Right Motor, x={rightMotorX}, y={rightMotorY} rightMotorPercent={rightMotorPercent}")
         #update motor position
         rightMotorX+=rightMotorPercent/100*self.mPerToSpeed*np.cos(self.orientation)*time_step
         rightMotorY+=rightMotorPercent/100*self.mPerToSpeed*np.sin(self.orientation)*time_step
@@ -119,7 +123,7 @@ class Car:
         self.Y=(leftMotorY+rightMotorY)/2
         
         #calculate new orientation
-        self.orientation+=np.arctan2(rightMotorY-leftMotorY,rightMotorX-leftMotorX)
+        self.orientation=np.pi/2+np.arctan2(rightMotorY-leftMotorY,rightMotorX-leftMotorX)
         #print(rightMotorY-leftMotorY)
         #print(rightMotorX-leftMotorX)
         #print(f"orientation={self.orientation}")
@@ -143,7 +147,7 @@ class Car:
         plt.sca(axs)
         #print(radius)
         axs.add_patch(plt.Circle((self.X, self.Y), radius, edgecolor=car_color))
-        print(self.orientation)
+        #print(self.orientation)
         #calculate left motor position
         leftMotorX=self.X-self.motor_dist*np.sin(self.orientation)
         leftMotorY=self.Y+self.motor_dist*np.cos(self.orientation)
