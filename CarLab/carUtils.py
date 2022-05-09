@@ -6,18 +6,19 @@ class Sensor:
     one line following sensor, for the purpose of this implementation we are using 
     basic sensor that will return the square of distance from this sensor to the line
     """
-    def __self__(self,model=None
-                 ,add_noise=0.05 #add 5% noise to the simulated measurments
+    def __init__(self,model=None
+                 ,add_noise=0 #add 5% noise to the simulated measurments
                 ):
-        
-        self.model=model
+        print(2)
+        if model:
+            self.model=model
+        else:
+            self.model=lambda d: 1-d**2
+        print(self.model)
         self.noise=add_noise
         
     def value(self,dist):
-        if model:
-            return self.model*(1+(1-np.random.random())*2*self.noise)
-        else:
-            return dist**2*(1+(1-np.random.random())*2*self.noise)
+        return self.model(dist)*(1+(1-np.random.random())*2*self.noise)
         
     def fit(self):
         """
@@ -47,14 +48,21 @@ class Sensor_Array:
         self.sensorLocs=np.array([self.X+np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.sin(self.orientation),
                                 self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)]).T
         
-    def get_values(self,line_loc):
-        distances=np.linalg.norm(self.sensorLocs-line_loc,axis=1)
+    def get_values(self,lines):
+        distances=np.empty((len(self.sensors),len(lines)))
+        for i,line in enumerate(lines):
+            distances[:,i]=line.distance(self.sensorLocs[:,0],self.sensorLocs[:,1])
+#         print(distances)
         
         sensor_values=np.empty(len(self.sensors))
         
         for i,d in enumerate(distances):
-            sensors_values[i]=self.sensors[i].value(d)
+#             print(np.argmin(distances[i,:]))
+#             print(np.min(distances[i,:]))
+#             print("---------------")
+            sensor_values[i]=self.sensors[i].value(np.min(distances[i,:]))
         return sensor_values
+    
     
     def update_loc(self,newX,newY,new_orientation):
 #         print(self.X)

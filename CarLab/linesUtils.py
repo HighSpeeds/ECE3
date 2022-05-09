@@ -11,6 +11,9 @@ class Line(object):
         
         self.slope=(self.endY-self.startY)/(self.endX-self.startX)
         #print(self.slope)
+        self.length=np.sqrt((self.startX-self.endX)**2+(self.startY-self.endY)**2)
+        self.theta=np.arctan2(self.endY-self.startY,self.endX-self.startX)
+        
     def contains(self,sensor_loc,thresh=10):
         """
         determine whether the sensor array will "see" this array
@@ -40,6 +43,28 @@ class Line(object):
             if x_intercept<max(sensor_loc["x2"],sensor_loc["x1"]) and x_intercept>min(sensor_loc["x2"],sensor_loc["x1"]):
                 return x_intercept, sensorSlope*(x_intercept-sensor_loc["x1"])+sensor_loc["y1"]
         return None
+    
+    def distance(self,x,y):
+        """
+        distance from the line to this point
+        """
+        
+        distances=abs((self.endX-self.startX)*(self.startY-y)-(self.startX-x)*(self.endY-self.startY))/self.length
+        intercept_x=x+distances*np.sin(self.theta)
+        intercept_y=y-distances*np.cos(self.theta)
+        
+        in_rangeX=np.logical_and(intercept_x<max(self.endX,self.startX),intercept_x>min(self.endX,self.startX))
+        in_rangeY=np.logical_and(intercept_y<max(self.endY,self.startY),intercept_y>min(self.endY,self.startY))
+        in_range=np.logical_and(in_rangeX,in_rangeY)
+        
+        dist_endpoints=np.min(np.array([np.sqrt((x-self.endX)**2+(y-self.endY)**2),
+                                 np.sqrt((x-self.startX)**2+(y-self.startY)**2)]),axis=0)
+        
+        distances=distances*in_range+dist_endpoints*np.logical_not(in_range)
+        
+        return distances
+    
+    
     
     def draw(self,ax):
         #print([self.startX,self.endX])
