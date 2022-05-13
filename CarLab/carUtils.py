@@ -98,6 +98,12 @@ class Car:
         self.motor_dist=motor_dist
         self.calculate_sensorLoc()
         
+    def set_loc(self,X,Y,orientation):
+        self.X=X
+        self.Y=Y
+        self.orientation=np.radians(startOrientation)
+        self.calculate_sensorLoc()
+        
     def calculate_sensorLoc(self):
         sensorX=self.X+np.cos(self.orientation)*self.sensor_array_offest
         sensorY=self.Y+np.sin(self.orientation)*self.sensor_array_offest
