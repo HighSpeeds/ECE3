@@ -1,6 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#car specs all in cm
+Car_specs={"diameter":16.3, #car diameter
+           "wheel_distance":14.9/2,
+           "wheel diameter":7.2,
+           "num_sensors":8,
+           "sensor_array_distance":16.3/2-6+0.58-0.127 #dist,
+           "sensor_spacing":0.953 #distance between each sensor
+          }
+
+
 class Sensor:
     """
     one line following sensor, for the purpose of this implementation we are using 
@@ -86,7 +96,9 @@ class Car:
     def __init__(self,startX,startY,startOrientation,sensor_array,
                 motor_dist=10, #distance from the center of the car to the motor, this is a random value rn
                 mPerToSpeed=1, #motor percentage to speed, this is a random value rn
-                sensor_array_offest=10 #the offest from the motor centerline to the sensor array in cm, this is a random value rn
+                sensor_array_offest=10, #the offest from the motor centerline to the sensor array in cm, this is a random value rn
+                car_radius=10,
+                wheel_radius=10
                 ):
         
         self.X=startX
@@ -97,6 +109,8 @@ class Car:
         self.mPerToSpeed=mPerToSpeed
         self.motor_dist=motor_dist
         self.calculate_sensorLoc()
+        self.car_radius=car_radius
+        self.wheel_radius=wheel_radius
         
     def calculate_sensorLoc(self):
         sensorX=self.X+np.cos(self.orientation)*self.sensor_array_offest
@@ -145,13 +159,17 @@ class Car:
                  [wheel_loc[1]-wheel_radius*np.sin(self.orientation),
                  wheel_loc[1]+wheel_radius*np.sin(self.orientation)],color=wheel_color)
         
-    def plot(self,axs,radius=None,wheel_radius=None,car_color="black", 
+    def plot(self,axs,car_color="black", 
              sensor_array_colors={"line_color":"black","sensor_colors":"blue"}):
+        
+        radius=self.car_radius
+        wheel_radius=self.wheel_radius
         
         if radius==None:
             radius=self.motor_dist*1.25
         if wheel_radius==None:
             wheel_radius=self.motor_dist*0.5
+        
         plt.sca(axs)
         #print(radius)
         axs.add_patch(plt.Circle((self.X, self.Y), radius, edgecolor=car_color))
