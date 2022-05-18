@@ -6,8 +6,8 @@ Car_specs={"diameter":16.3, #car diameter
            "wheel_distance":14.9/2,
            "wheel diameter":7.2,
            "num_sensors":8,
-           "sensor_array_distance":16.3/2-6+0.58-0.127 #dist,
-           "sensor_spacing":0.953 #distance between each sensor
+           "sensor_array_distance":16.3/2-6+0.58-0.127, #dist,
+           "sensor_spacing":0.953, #distance between each sensor
           }
 
 
@@ -17,18 +17,20 @@ class Sensor:
     basic sensor that will return the square of distance from this sensor to the line
     """
     def __init__(self,model=None
-                 ,add_noise=0 #add 5% noise to the simulated measurments
+                 ,noise_generator=None
                 ):
-        print(2)
         if model:
             self.model=model
         else:
             self.model=lambda d: 1-d**2
-        print(self.model)
-        self.noise=add_noise
+            
+        if noise_generator:
+            self.noise_generator=noise_generator
+        else:
+            self.noise_generator=lambda x: 0 #zero noise
         
     def value(self,dist):
-        return self.model(dist)*(1+(1-np.random.random())*2*self.noise)
+        return self.model(dist)*(1+self.noise_generator())
         
     def fit(self):
         """
