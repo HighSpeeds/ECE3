@@ -1,0 +1,28 @@
+\documentclass[12pt]{article}
+\title{ECE 3 HW 8}
+
+\author{Lawrence Liu}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+\usepackage[section]{placeins}
+\begin{document}
+\maketitle
+At time $t=0^-$, since the capcitor acts like a open circuit and the inductor acts as a short we have $v_C(0^-)=200V$, and $i_L(0^-)=2A$.
+\subsection*{(a)}
+Therefore since the voltage across a capacitor cannot change instantiously we must have $v_C(0^+)=v_C(0^-)=\boxed{200V}$
+\subsection*{(b)}
+Since the current across a inductor cannot change instantiously we must have $i_L(0^+)=i_L(0^-)=\boxed{2A}$
+\subsection*{(c)}
+Since the resistor must drop $v_C(0^+)=200V$ we must have $i_{50\Omega}(0^+)=\boxed{4A}$
+\subsection*{(d)}
+Since when the switch changes, the inductor is now in parallel with the capacitor $v_L(0^+)=v_C(0^+)=\boxed{200V}$
+\subsection*{(e)}
+From KCL the capacitor must have a current $i_{50\Omega}(0^+)+i_L(0^+)=\boxed{6A}$ flowing out
+\subsection*{(f)}
+From the i-v relationship of a capacitor we have $i_c(0^+)=\left.c\frac{dv_c(t)}{dt}\right|_{t=0^+}$, 
+therefore we have $\left.\frac{dv_c(t)}{dt}\right|_{t=0^+}=\frac{-6}{0.01}=\boxed{-600\frac{V}{s}}$
+\subsection*{(g)}
+From the i-v relationship of a capacitor we have $v_l(0^+)=\left.L\frac{di_L(t)}{dt}\right|_{t=0^+}$, 
+therefore we have $\left.\frac{di_L(t)}{dt}\right|_{t=0^+}=\frac{200}{5}=\boxed{40\frac{A}{s}}$
+\end{document}
