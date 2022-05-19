@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 #car specs all in cm
 Car_specs={"diameter":16.3, #car diameter
            "wheel_distance":14.9/2,
-           "wheel diameter":7.2,
+           "wheel_diameter":7.2,
            "num_sensors":8,
            "sensor_array_distance":16.3/2-6+0.58-0.127, #dist,
            "sensor_spacing":0.953, #distance between each sensor
@@ -30,7 +30,8 @@ class Sensor:
             self.noise_generator=lambda x: 0 #zero noise
         
     def value(self,dist):
-        return self.model(dist)*(1+self.noise_generator())
+#         print(dist)
+        return self.model(dist)*(1+self.noise_generator(dist))
         
     def fit(self):
         """
@@ -58,7 +59,9 @@ class Sensor_Array:
     def calculateSensorLocs(self):
         #print(np.cos(self.orientation))
         self.sensorLocs=np.array([self.X+np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.sin(self.orientation),
-                                self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)]).T
+                                self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)])[:,::-1].T
+        
+#         print(self.sensorLocs)
         
     def get_values(self,lines):
         distances=np.empty((len(self.sensors),len(lines)))
@@ -117,12 +120,13 @@ class Car:
     def set_loc(self,X,Y,orientation):
         self.X=X
         self.Y=Y
-        self.orientation=np.radians(startOrientation)
+        self.orientation=np.radians(orientation)
         self.calculate_sensorLoc()
         
     def calculate_sensorLoc(self):
         sensorX=self.X+np.cos(self.orientation)*self.sensor_array_offest
         sensorY=self.Y+np.sin(self.orientation)*self.sensor_array_offest
+#         print(sensorX,sensorY)
         self.sensor_array.update_loc(sensorX,sensorY,self.orientation)
         
         

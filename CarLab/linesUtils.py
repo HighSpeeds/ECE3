@@ -50,13 +50,17 @@ class Line(object):
         """
         
         distances=abs((self.endX-self.startX)*(self.startY-y)-(self.startX-x)*(self.endY-self.startY))/self.length
-        intercept_x=x+distances*np.sin(self.theta)
-        intercept_y=y-distances*np.cos(self.theta)
-        
-        in_rangeX=np.logical_and(intercept_x<max(self.endX,self.startX),intercept_x>min(self.endX,self.startX))
-        in_rangeY=np.logical_and(intercept_y<max(self.endY,self.startY),intercept_y>min(self.endY,self.startY))
+#         print("d",distances)
+        intercept_x=np.round(x+distances*np.sin(self.theta),3)
+        intercept_y=np.round(np.abs(y)-distances*np.cos(self.theta),3)
+#         print("intercepts")
+#         print(intercept_x)
+#         print(intercept_y)
+        in_rangeX=np.logical_and(intercept_x<=max(self.endX,self.startX),intercept_x>=min(self.endX,self.startX))
+        in_rangeY=np.logical_and(intercept_y<=max(self.endY,self.startY),intercept_y>=min(self.endY,self.startY))
         in_range=np.logical_and(in_rangeX,in_rangeY)
-        
+#         print("in_range")
+#         print(in_range)
         dist_endpoints=np.min(np.array([np.sqrt((x-self.endX)**2+(y-self.endY)**2),
                                  np.sqrt((x-self.startX)**2+(y-self.startY)**2)]),axis=0)
         
