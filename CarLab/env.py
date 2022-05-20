@@ -65,16 +65,22 @@ class Env:
     def reset(self):
         self.sensor_values=[[],[],[],[],[],[],[],[]]
         if self.line_generator:
-            self.lines,startX,startY,orientation=self.line_generator()
+            self.lines,startX,startY,orientation,self.endX,self.endY=self.line_generator()
         else:
             self.lines=[Line((0,0),(100,0))]
-            startX=0
-            startY=0.953
+            self.startX=0
+            self.startY=0.953
+            self.endX=100
+            self.endY=0
             orientation=0
             
-        self.car.set_loc(startX,startY,orientation)
+        self.car.set_loc(self.startX,self.startY,orientation)
         
-        
+    def distance_from_start(self):
+        return np.sqrt((self.startX-self.car.X)**2+(self.startY-self.car.Y)**2)
+    
+    def distance_from_end(self):
+        return np.sqrt((self.endX-self.car.X)**2+(self.endY-self.car.Y)**2)
     
     def fit_sensor_models(self):
         
@@ -120,7 +126,7 @@ class Env:
     
     def off_track(self,threshold=None):
         if threshold is None:
-            threshold=2*self.Car_specs["diameter"]
+            threshold=0.5*self.Car_specs["diameter"]
         
         distances=np.empty(len(self.lines))
         for i,line in enumerate(self.lines):
