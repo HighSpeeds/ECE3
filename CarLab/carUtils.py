@@ -100,7 +100,7 @@ class Sensor_Array:
 class Car:
     def __init__(self,startX,startY,startOrientation,sensor_array,
                 motor_dist=10, #distance from the center of the car to the motor, this is a random value rn
-                mPerToSpeed=100, #motor percentage to speed, this is a random value rn
+                mPerToSpeed=198/(6*0.7), #motor percentage to speed, this is a random value rn
                 sensor_array_offest=10, #the offest from the motor centerline to the sensor array in cm, this is a random value rn
                 car_radius=10,
                 wheel_radius=10
