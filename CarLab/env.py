@@ -65,7 +65,7 @@ class Env:
     def reset(self):
         self.sensor_values=[[],[],[],[],[],[],[],[]]
         if self.line_generator:
-            self.lines,startX,startY,orientation,self.endX,self.endY=self.line_generator()
+            self.lines,self.startX,self.startY,orientation,self.endX,self.endY=self.line_generator()
         else:
             self.lines=[Line((0,0),(100,0))]
             self.startX=0
