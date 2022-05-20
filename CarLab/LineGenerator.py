@@ -15,6 +15,8 @@ def intersects(s0,s1):
     p3 = dy0*(s0[1][0]-s1[1][0]) - dx0*(s0[1][1]-s1[1][1])
     return (p0*p1<=0) & (p2*p3<=0)
         
+
+
 def randomPath():
     pathList = []
     StartCord = (0,0)
