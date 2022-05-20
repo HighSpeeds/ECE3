@@ -1,37 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#car specs all in cm
-Car_specs={"diameter":16.3, #car diameter
-           "wheel_distance":14.9/2,
-           "wheel_diameter":7.2,
-           "num_sensors":8,
-           "sensor_array_distance":16.3/2-6+0.58-0.127, #dist,
-           "sensor_spacing":0.953, #distance between each sensor
-          }
-
-
 class Sensor:
     """
     one line following sensor, for the purpose of this implementation we are using 
     basic sensor that will return the square of distance from this sensor to the line
     """
     def __init__(self,model=None
-                 ,noise_generator=None
+                 ,add_noise=0 #add 5% noise to the simulated measurments
                 ):
+        print(2)
         if model:
             self.model=model
         else:
             self.model=lambda d: 1-d**2
-            
-        if noise_generator:
-            self.noise_generator=noise_generator
-        else:
-            self.noise_generator=lambda x: 0 #zero noise
+        print(self.model)
+        self.noise=add_noise
         
     def value(self,dist):
-#         print(dist)
-        return self.model(dist)*(1+self.noise_generator(dist))
+        return self.model(dist)*(1+(1-np.random.random())*2*self.noise)
         
     def fit(self):
         """
@@ -59,9 +46,7 @@ class Sensor_Array:
     def calculateSensorLocs(self):
         #print(np.cos(self.orientation))
         self.sensorLocs=np.array([self.X+np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.sin(self.orientation),
-                                self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)])[:,::-1].T
-        
-#         print(self.sensorLocs)
+                                self.Y-np.linspace(-self.length/2,self.length/2,len(self.sensors))*np.cos(self.orientation)]).T
         
     def get_values(self,lines):
         distances=np.empty((len(self.sensors),len(lines)))
@@ -101,9 +86,7 @@ class Car:
     def __init__(self,startX,startY,startOrientation,sensor_array,
                 motor_dist=10, #distance from the center of the car to the motor, this is a random value rn
                 mPerToSpeed=1, #motor percentage to speed, this is a random value rn
-                sensor_array_offest=10, #the offest from the motor centerline to the sensor array in cm, this is a random value rn
-                car_radius=10,
-                wheel_radius=10
+                sensor_array_offest=10 #the offest from the motor centerline to the sensor array in cm, this is a random value rn
                 ):
         
         self.X=startX
@@ -114,19 +97,10 @@ class Car:
         self.mPerToSpeed=mPerToSpeed
         self.motor_dist=motor_dist
         self.calculate_sensorLoc()
-        self.car_radius=car_radius
-        self.wheel_radius=wheel_radius
-        
-    def set_loc(self,X,Y,orientation):
-        self.X=X
-        self.Y=Y
-        self.orientation=np.radians(orientation)
-        self.calculate_sensorLoc()
         
     def calculate_sensorLoc(self):
         sensorX=self.X+np.cos(self.orientation)*self.sensor_array_offest
         sensorY=self.Y+np.sin(self.orientation)*self.sensor_array_offest
-#         print(sensorX,sensorY)
         self.sensor_array.update_loc(sensorX,sensorY,self.orientation)
         
         
@@ -171,17 +145,13 @@ class Car:
                  [wheel_loc[1]-wheel_radius*np.sin(self.orientation),
                  wheel_loc[1]+wheel_radius*np.sin(self.orientation)],color=wheel_color)
         
-    def plot(self,axs,car_color="black", 
+    def plot(self,axs,radius=None,wheel_radius=None,car_color="black", 
              sensor_array_colors={"line_color":"black","sensor_colors":"blue"}):
-        
-        radius=self.car_radius
-        wheel_radius=self.wheel_radius
         
         if radius==None:
             radius=self.motor_dist*1.25
         if wheel_radius==None:
             wheel_radius=self.motor_dist*0.5
-        
         plt.sca(axs)
         #print(radius)
         axs.add_patch(plt.Circle((self.X, self.Y), radius, edgecolor=car_color))
@@ -201,3 +171,48 @@ class Car:
         
         #plot linear array
         self.sensor_array.plot(axs,**sensor_array_colors)
+
+def intersects(s0,s1):
+    dx0 = s0[1][0]-s0[0][0]
+    dx1 = s1[1][0]-s1[0][0]
+    dy0 = s0[1][1]-s0[0][1]
+    dy1 = s1[1][1]-s1[0][1]
+    p0 = dy1*(s1[1][0]-s0[0][0]) - dx1*(s1[1][1]-s0[0][1])
+    p1 = dy1*(s1[1][0]-s0[1][0]) - dx1*(s1[1][1]-s0[1][1])
+    p2 = dy0*(s0[1][0]-s1[0][0]) - dx0*(s0[1][1]-s1[0][1])
+    p3 = dy0*(s0[1][0]-s1[1][0]) - dx0*(s0[1][1]-s1[1][1])
+    return (p0*p1<=0) & (p2*p3<=0)
+        
+def randomPath():
+    pathList = []
+    StartCord = (0,0)
+    startDir = 0
+    ranStop = random.randint(0, 3)
+    hasIntersect = False
+
+    while ranStop > 0:
+        ranLength = random.random() * 30 + 20
+        newCord = (StartCord[0]+ranLength*(math.cos(math.radians(startDir))),StartCord[1]+ranLength*(math.sin(math.radians(startDir))))
+        list2 = [StartCord,newCord]
+  
+        for i in pathList:
+            list1 = [(pathList[i].startX, pathList[i].startY), (pathList[i].endX, pathList[i].endY)]
+            if intersects(list1,list2):
+                hasIntersect = True
+                break
+        if hasIntersect:
+            continue
+
+        pathList.append(Line(StartCord,newCord))
+        Dir = bool(random.getrandbits(1))
+
+        newAngle = random.random()*135+45
+        newcurve = make_curve(newAngle, 10, start_point=[newCord[0],newCord[1]],n_lines=20,left=Dir,start_degree=startDir)
+        if Dir:
+            startDir = 360 % (startDir+newAngle)
+        else:
+            startDir = 360 % (startDir-newAngle)
+        for i in newcurve:
+          pathList.append(newcurve[i])
+        StartCord = (newcurve[-1].endX,newcurve[-1].endY)
+    return pathList
