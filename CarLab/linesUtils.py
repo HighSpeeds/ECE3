@@ -99,3 +99,58 @@ def make_curve(degrees, r, start_point,n_lines,left=True,start_degree=0):
                      [X[i+1],Y[i+1]]))
     return lines
     
+def intersects(s0,s1):
+    dx0 = s0[1][0]-s0[0][0]
+    dx1 = s1[1][0]-s1[0][0]
+    dy0 = s0[1][1]-s0[0][1]
+    dy1 = s1[1][1]-s1[0][1]
+    p0 = dy1*(s1[1][0]-s0[0][0]) - dx1*(s1[1][1]-s0[0][1])
+    p1 = dy1*(s1[1][0]-s0[1][0]) - dx1*(s1[1][1]-s0[1][1])
+    p2 = dy0*(s0[1][0]-s1[0][0]) - dx0*(s0[1][1]-s1[0][1])
+    p3 = dy0*(s0[1][0]-s1[1][0]) - dx0*(s0[1][1]-s1[1][1])
+    return (p0*p1<=0) & (p2*p3<=0)
+
+def ranPath():
+    pathList = []
+    listStraight = []
+    StartCord = (0,0)
+    startDir = 0
+    ranStop = random.randint(0, 5)
+    hasIntersect = False
+
+    while ranStop > 2:
+        skipLoop = True
+        while skipLoop:
+          ranLength = random.random() * 30 + 20
+          newCord = (StartCord[0]+ranLength*(math.cos(math.radians(startDir))),StartCord[1]+ranLength*(math.sin(math.radians(startDir))))
+          list2 = [StartCord,newCord]
+          newLine = Line(StartCord,newCord)
+          skipLoop = False
+          for existingLine in listStraight:
+            if intersects([(existingLine.startX,existingLine.startY),(existingLine.endX,existingLine.endY)], [(newLine.startX,newLine.startY),(newLine.endX,newLine.endY)]):
+             skipLoop = True
+
+            
+        
+        pathList.append(newLine)
+        listStraight.append(newLine)
+        Dir = bool(random.getrandbits(1))
+        
+        
+        newAngle = random.random()*135+45
+        newcurve = make_curve(newAngle, 10, start_point=[newCord[0],newCord[1]],n_lines=20,left=Dir,start_degree=startDir-90)
+        
+        if Dir:
+            startDir = startDir+newAngle
+        else:
+            startDir = startDir-newAngle
+        for i in range(len(newcurve)):
+          pathList.append(newcurve[i])
+        StartCord = (newcurve[-1].endX,newcurve[-1].endY)
+        ranStop = random.randint(0,6)
+
+        for i in range(len(newcurve)):
+          pathList.append(newcurve[i])
+        StartCord = (newcurve[-1].endX,newcurve[-1].endY)
+        ranStop = random.randint(0,6)
+    return pathList
