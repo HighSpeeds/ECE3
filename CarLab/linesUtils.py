@@ -12,6 +12,7 @@ class Line(object):
         self.slope=(self.endY-self.startY)/(self.endX-self.startX)
         #print(self.slope)
         self.length=np.sqrt((self.startX-self.endX)**2+(self.startY-self.endY)**2)
+        self.l2=(self.startX-self.endX)**2+(self.startY-self.endY)**2
         self.theta=np.arctan2(self.endY-self.startY,self.endX-self.startX)
         
     def contains(self,sensor_loc,thresh=10):
@@ -49,26 +50,45 @@ class Line(object):
         distance from the line to this point
         """
         
-        distances=abs((self.endX-self.startX)*(self.startY-y)-(self.startX-x)*(self.endY-self.startY))/self.length
+#         distances=abs((self.endX-self.startX)*(self.startY-y)-(self.startX-x)*(self.endY-self.startY))/self.length
 #         print("d",distances)
-        intercept_x=np.round(x+distances*np.sin(self.theta),3)
-        intercept_y=np.round(np.abs(y)-distances*np.cos(self.theta),3)
+#         intercept_x=np.round(x+distances*np.sin(self.theta),3)
+#         intercept_y=np.round(np.abs(y)-distances*np.cos(self.theta),3)
 #         print("intercepts")
 #         print(intercept_x)
 #         print(intercept_y)
-        in_rangeX=np.logical_and(intercept_x<=max(self.endX,self.startX),intercept_x>=min(self.endX,self.startX))
-        in_rangeY=np.logical_and(intercept_y<=max(self.endY,self.startY),intercept_y>=min(self.endY,self.startY))
-        in_range=np.logical_and(in_rangeX,in_rangeY)
+#         in_rangeX=np.logical_and(intercept_x<=max(self.endX,self.startX),intercept_x>=min(self.endX,self.startX))
+#         in_rangeY=np.logical_and(intercept_y<=max(self.endY,self.startY),intercept_y>=min(self.endY,self.startY))
+#         in_range=np.logical_and(in_rangeX,in_rangeY)
 #         print("in_range")
 #         print(in_range)
-        dist_endpoints=np.min(np.array([np.sqrt((x-self.endX)**2+(y-self.endY)**2),
-                                 np.sqrt((x-self.startX)**2+(y-self.startY)**2)]),axis=0)
+#         dist_endpoints=np.min(np.array([np.sqrt((x-self.endX)**2+(y-self.endY)**2),
+#                                  np.sqrt((x-self.startX)**2+(y-self.startY)**2)]),axis=0)
         
-        distances=distances*in_range+dist_endpoints*np.logical_not(in_range)
-        
+#         distances=distances*in_range+dist_endpoints*np.logical_not(in_range)
+#         print(distances)
+#         return distances
+
+        distances=np.empty(x.shape[0])
+    
+        for i in range(len(x)):
+            # Return minimum distance between line segment vw and point p
+            l2 = self.l2  #i.e. |w-v|^2 -  avoid a sqrt
+            if (l2 == 0.0):
+                return  self.Calcdistance(self.startX,self.startY,x[i],y[i]) # v == w case
+            #Consider the line extending the segment, parameterized as v + t (w - v).
+            #We find projection of point p onto the line. 
+            #It falls where t = [(p-v) . (w-v)] / |w-v|^2
+            #We clamp t from [0,1] to handle points outside the segment vw.
+            t = max(0, min(1, np.dot([x[i]-self.startX,y[i]-self.startY], [self.endX-self.startX,self.endY-self.startY]) / l2))
+            projectionX = self.startX + t * (self.endX - self.startX)  #Projection falls on the segment
+            projectionY = self.startY + t * (self.endY - self.startY)
+            distances[i]=self.Calcdistance(x[i],y[i], projectionX,projectionY)
         return distances
+
     
-    
+    def Calcdistance(self,x1,y1,x2,y2):
+        return np.sqrt((x1-x2)**2+(y1-y2)**2)
     
     def draw(self,ax):
         #print([self.startX,self.endX])

@@ -41,8 +41,8 @@ void setup()
 
 
 int minX[8]={412, 550, 573, 643, 549, 527, 481, 527};
-int maxNormX[8]={  2088,   1944, 664091,   1708,   1158,   1730,   1894,   1973};
-int weights[8]={4, 3, 2, 1,-1,-2,-3,-4};
+int maxNormX[8]={  2088, 1944, 1826, 1708, 1158, 1730, 1894, 1973};
+int weights[8]={8, 4, 2, 1,-1,-2,-4,-8};
 
 float sensorFusion(){
   ECE3_read_IR(sensorValues);
@@ -54,7 +54,7 @@ float sensorFusion(){
   return error;
 }
 
-float k_p=-1;
+float k_p=-10;
 float k_d=0;
 float PID(float error,float old_error){
   return k_p*error+k_d*(error-old_error);
@@ -63,13 +63,13 @@ float PID(float error,float old_error){
 float error;
 float old_error=0;
 
-uint16_t base_speed=10;
+uint16_t base_speed=20;
 float correction;
 
 void loop()
 {
-  error=sensorFusion();
-
+  error=sensorFusion(); 
+  Serial.println(error);
   correction=PID(error,old_error);
 
   analogWrite(left_pwm_pin,base_speed-correction);

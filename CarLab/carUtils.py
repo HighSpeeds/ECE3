@@ -27,11 +27,11 @@ class Sensor:
         if noise_generator:
             self.noise_generator=noise_generator
         else:
-            self.noise_generator=lambda x: 0 #zero noise
+            self.noise_generator=lambda: 0 #zero noise
         
     def value(self,dist):
 #         print(dist)
-        return self.model(dist)*(1+self.noise_generator(dist))
+        return self.model(dist)*(1+self.noise_generator())
         
     def fit(self):
         """

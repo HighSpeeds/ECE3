@@ -2,7 +2,7 @@
 
 uint16_t sensorValues[8];
 const uint16_t sensorMins[8] = {412, 550, 573, 643, 549, 527, 481, 527};
-const uint16_t sensorMaxes[8] = {2500,2370,2500,1570,1790,2120,2500,2500};
+const uint16_t sensorMaxes[8] = {2500, 2494, 2399, 2351, 1707, 2257, 2375, 2500};
 const int sensorWeights[8] = {8,4,2,1,-1,-2,-4,-8};   //{5.0,3.5,2.0,1.0,-1.0,-2.0,-3.5,-5.0}
 
 const int left_nslp_pin=31; // nslp ==> awake & ready for PWM
@@ -13,9 +13,9 @@ const int right_nslp_pin=11; // nslp ==> awake & ready for PWM
 const int right_dir_pin=30;
 const int right_pwm_pin=39;
 
-uint16_t baseSpeed = 100;
-float kP = 45;
-float kD = 2;
+uint16_t baseSpeed = 200;
+float kP = 50;
+float kD = 4;
 
 int prevTime;
 float prevError;

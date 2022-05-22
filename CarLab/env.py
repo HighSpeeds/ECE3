@@ -5,10 +5,8 @@ import glob
 import sklearn.svm
 
 
-Noise_specs={"sensor noise":5, #% error in sensor noise (max)
-             "sensor noise distribution": scipy.stats.uniform, #we use a uniform distribution rn (maybe fun to change)
-             "motor noise": 1, #% error between what the input of the motor percentage to the output of the motor percentage
-             "motor noise ditribution":scipy.stats.norm #use a normal distribution rn (must be centered around 0, percentage would be std)
+Noise_specs={"sensor noise": scipy.stats.norm(0,1).rvs, #we use a uniform distribution rn (maybe fun to change)
+             "motor noise": scipy.stats.norm(1,0.1).rvs, #% error between what the input of the motor percentage to the output of the motor percentage
             }
 
 
@@ -46,9 +44,10 @@ class Env:
         #init sensor models
         sensor_models=self.fit_sensor_models()
         #init sensors
-        sensors=[Sensor(model=sensor_models[i]) for i in range(8)]
+        self.sensors=[Sensor(model=sensor_models[i],
+                        noise_generator=Noise_specs["sensor noise"]) for i in range(8)]
         #init sensor_array
-        sensor_array=Sensor_Array(sensors,0,0,self.Car_specs['sensor_spacing']*7)
+        sensor_array=Sensor_Array(self.sensors,0,0,self.Car_specs['sensor_spacing']*7)
         #init car
         self.car=Car(0,0,0,sensor_array,
                      motor_dist=Car_specs["wheel_distance"],
@@ -59,7 +58,7 @@ class Env:
         
         self.line_generator=line_generator
         self.reset()
-        
+        self.Noise_specs=Noise_specs
         self.sensor_values=[[],[],[],[],[],[],[],[]]
         
     def reset(self):
@@ -99,8 +98,11 @@ class Env:
                 #print(raw_data[:,i].shape)
 
         X=np.array(X)
-        #X=X[X>0]
         T=np.array(T)
+        X=X[:,np.all(X>0,axis=0)]
+        T=T[np.all(X>0,axis=0)]
+        T=T[np.all(X<=2500,axis=0)]
+        X=X[:,np.all(X<=2500,axis=0)]
         line_locs=-4+T*0.2
         sensor_models=[]
         for i in range(8):
@@ -111,13 +113,13 @@ class Env:
         return sensor_models
     
     
-    def move_car(self,leftMotorPercent,rightMotorPercent,
-                 time_step=0.005 #0.05 ms
+    def move_car(self,leftMotorPWM,rightMotorPWM,
+                 time_step=0.05 #5 ms
                 ):
         
         for i in range(int(time_step//0.005)):
-            self.car.move_car(leftMotorPercent, 
-                 rightMotorPercent)
+            self.car.move_car(leftMotorPWM/255*Noise_specs["motor noise"]()*100, 
+                 rightMotorPWM/255*Noise_specs["motor noise"]()*100)
         
         sensor_values=self.car.sensor_array.get_values(self.lines)
         for i in range(8):
