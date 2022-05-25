@@ -3,7 +3,7 @@ uint16_t sensorValues[8];
 const int bump_sw_0_pin = 24;
 const int bump_sw_4_pin = 8;
 
-const int LED_RF = 77;
+const int LED_BLUE = 77;
 const int LED_GREEN=76;
 const int LED_RED = 75;
 
@@ -35,69 +35,44 @@ void setup() {
 
   digitalWrite(right_dir_pin,LOW);
   digitalWrite(right_nslp_pin,HIGH);
-  pinMode(LED_RF, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 }
 
-//setup memory
+//memory simple as possible
+uint16_t states[2000][8];
+int actions[2000];
+float rewards[2000];
+int max_obs=2000;
+int n_obs=0;
 
-struct memory_node{
-  uint16_t sensor_values[8]; //the sensor Values at this time t
-  int action; //the action taken
-  int reward; //the reward recived
-};
-
-struct memorySample{
-  uint16_t sensor_values[8]; //the sensor Values at this time t
-  int action; //the action taken
-  int reward; //the reward recived
-  uint16_t next_sensor_values[8];
-};
-
-void copy_unit16(uint16_t* arr1,uint16_t* arr2){
-  for (int i=0; i<8; i++){
-    arr2[i]=arr1[i];
-  }
-}
-
-
-//Memory memory;
-struct memory_node memory[2000];
-int observations_taken=0;
-int max_observations=2000;
-
-bool Add(uint16_t sensorValues[],int action,int reward, int & observations_taken,struct memory_node *memory){
-    if (observations_taken<=max_observations){
-      
-      memory[observations_taken].action=action;
-      observations_taken++;
-      return true;
-    }
-    return false;
-}
-
-struct memorySample randomSample(){
-    int index=random(observations_taken-1); //choose an observation, cannot be the last observation because it does not have a next value
-    memorySample sampled;
-
-
-    copy_unit16(memory[index].sensor_values,sampled.sensor_values);
-    sampled.action=memory[index].action;
-    sampled.reward=memory[index].reward;
-    copy_unit16(memory[index+1].sensor_values,sampled.sensor_values);
-    return sampled;
+bool add_to_memory(uint16_t state[],int action,float reward, 
+        uint16_t States[][8]=states, int* Actions=actions, float* Reward=rewards, int &n_obs=n_obs){
+        // adds to the memory arrays, assuming that n_obs is not greater than or equalt to
+        // max observation
+        // if it is return false, otherswise return true
+        if (n_obs<max_obs){
+          //copy the values of state into States
+          for (int i=0; i<8; i++){
+            States[n_obs][i]=state[i];
+          }
+          Actions[n_obs]=action;
+          Reward[n_obs]=reward;
+          return true;
+        }
+        return false;
 }
 
 
 //possible actions
-uint16_t actions[5][2]={{0,50},{50,0},{100,0},{0,100},{100,100}};
+uint16_t possible_actions[5][2]={{0,50},{50,0},{100,0},{0,100},{100,100}};
 int n_actions=5;
 
-void actions_to_motor(int i){
+void actions_to_motor(int action){
   //turns action i into motor movement
-  analogWrite(left_pwm_pin,actions[i][0]);
-  analogWrite(right_pwm_pin,actions[i][1]);
+  analogWrite(left_pwm_pin,possible_actions[action][0]);
+  analogWrite(right_pwm_pin,possible_actions[action][1]);
 
 }
 
@@ -122,56 +97,60 @@ float sensorFusion(uint16_t sensorValues[]){
 
 //stop function (incomplete)
 bool OffTrack=false;
-int i;
+int action;
 
 bool reversing=false;
-
-int reward;
-memory_node new_memory_node;
+bool done=false;
+float reward;
+bool started=false;
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //pick a random action
-  if (!reversing){
-    i=random(n_actions);
-    //i=4;
-//    Serial.println(i);
-    //take the measurments from the sensors
-    ECE3_read_IR(sensorValues);
-    //calculate reward
-    reward=0;
-    //move motors
-    actions_to_motor(i);
-    //save values
-    reversing=!Add(sensorValues,i,reward,observations_taken,memory);
-    delay(0.005);
-    if (reversing){
-      analogWrite(left_pwm_pin,0);
-      analogWrite(right_pwm_pin,0);
-      i=max_observations-1;
-      digitalWrite(right_dir_pin,HIGH);
-      digitalWrite(left_dir_pin,HIGH);
-      digitalWrite(left_nslp_pin,HIGH);
-      digitalWrite(right_nslp_pin,HIGH);
-      digitalWrite(LED_RF, HIGH);
+
+
+    if (reversing && !done){
+      //pass the values back
+      action=actions[n_obs];
+      actions_to_motor(action);
+      n_obs--;
+      delay(5);
+      if (n_obs==0){
+        //finished
+        done=true;
+        //so zero motors
+        analogWrite(left_pwm_pin,0);
+        analogWrite(right_pwm_pin,0);
+        analogWrite(LED_GREEN, HIGH);
+        analogWrite(LED_RED, LOW);
+      }
     }
-  }
-//      Serial.println(i);
-  else{
-    Serial.println(i);
-    if (i==max_observations-1){digitalWrite(LED_RED, HIGH);}
-    actions_to_motor(memory[i].action);
-    i--;
-    delay(0.005);
-    if (i==-1){
-      reversing=true;
-      digitalWrite(LED_RF, LOW);
-      digitalWrite(LED_GREEN, HIGH);
-      digitalWrite(right_dir_pin,LOW);
-      digitalWrite(left_dir_pin,LOW);
-      observations_taken=0;
+    else if (!done)
+    {
+      //moving forward
+      if (!started){
+        //right blue led on
+        analogWrite(LED_BLUE, HIGH);
+        started=true;
+      }
+      //randomly pick an action
+      action=random(n_actions);
+      ECE3_read_IR(sensorValues);
+      reward=0;
+      reversing=add_to_memory(sensorValues, action, reward);
+      actions_to_motor(action);
+      delay(5);
+      if (reversing){
+        //setup for reversing
+        //zero out blue led
+        analogWrite(LED_BLUE,LOW);
+        //turn on red led
+        analogWrite(LED_RED,HIGH);
+        //reverse motors
+        digitalWrite(right_dir_pin,HIGH);
+        digitalWrite(right_nslp_pin,HIGH);
+        digitalWrite(left_dir_pin,HIGH);
+        digitalWrite(left_nslp_pin,HIGH);
+      }
     }
-  }
     
 
 }
