@@ -54,7 +54,7 @@ char testMsg[4]={'t','e','s','t'};
 bool handShake(){
   Serial.print("test");
   Serial.println();
-
+  delay(500);
   for (int i=0; i<4;i++){
     char1 = Serial.read();
     if (char1!=testMsg[i]){
@@ -66,6 +66,40 @@ bool handShake(){
 }
 
 
+//sendArray
+template<typename Value>
+void send1dArray(Value Array[],int array_size){
+  for (int i=0; i<array_size; i++){
+    Serial.print(Array[i]);
+    Serial.print(",");
+  }
+  Serial.println();
+  
+}
+
+template<typename Value>
+void send2dArray(Value Array[][2],int dim1,int dim2){
+  //assume second dim is 2
+  Serial.print(dim1);
+  Serial.print(",");
+  Serial.print(dim2);
+  Serial.println();
+  for (int i=0; i<dim1; i++){
+    send1dArray(Array[i],dim2);  
+  }
+  Serial.println();
+  
+}
+
+
+
+uint16_t testArray[5]={1,2,3,4,5};
+
+uint16_t testArray2d[5][2]={{1,1},
+                            {2,2},
+                            {3,3},
+                            {4,4},
+                            {5,5}};
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
@@ -77,10 +111,9 @@ void loop() {
     digitalWrite(LED_RF, HIGH);
     digitalWrite(LED_GREEN, LOW);
     delay(800);
-    if (handShake()){
-      digitalWrite(LED_GREEN, HIGH);
-    }
+    send2dArray(testArray2d,5,2);
     delay(2500);
+    
     digitalWrite(LED_RF, LOW);
   }
 }
