@@ -41,11 +41,12 @@ void setup() {
 }
 
 //memory simple as possible
-uint16_t states[2000][8];
-int actions[2000];
-float rewards[2000];
-int max_obs=2000;
+uint16_t states[200][8];
+int actions[200];
+float rewards[200];
+int max_obs=200;
 int n_obs=0;
+
 
 bool add_to_memory(uint16_t state[],int action,float reward, 
         uint16_t States[][8]=states, int* Actions=actions, float* Reward=rewards, int &n_obs=n_obs){
@@ -59,8 +60,10 @@ bool add_to_memory(uint16_t state[],int action,float reward,
           }
           Actions[n_obs]=action;
           Reward[n_obs]=reward;
+          n_obs++;
           return true;
         }
+        n_obs--;
         return false;
 }
 
@@ -69,10 +72,16 @@ bool add_to_memory(uint16_t state[],int action,float reward,
 uint16_t possible_actions[5][2]={{0,50},{50,0},{100,0},{0,100},{100,100}};
 int n_actions=5;
 
-void actions_to_motor(int action){
+void actions_to_motor(int action,bool reversing=false){
   //turns action i into motor movement
+  if (reversing){
+    analogWrite(left_pwm_pin,possible_actions[action][1]);
+  analogWrite(right_pwm_pin,possible_actions[action][0]);
+    }
+  else{
   analogWrite(left_pwm_pin,possible_actions[action][0]);
   analogWrite(right_pwm_pin,possible_actions[action][1]);
+  }
 
 }
 
@@ -103,18 +112,22 @@ bool reversing=false;
 bool done=false;
 float reward;
 bool started=false;
+int time_steps=10;
+int loopStartTime;
 
 void loop() {
-
-
+    loopStartTime=micros();
     if (reversing && !done){
+      Serial.print("reversing");
       //pass the values back
       action=actions[n_obs];
-      actions_to_motor(action);
+      Serial.print(n_obs);
       n_obs--;
+      actions_to_motor(action,false);
       delay(5);
-      if (n_obs==0){
+      if (n_obs<0){
         //finished
+        Serial.print("done!");
         done=true;
         //so zero motors
         analogWrite(left_pwm_pin,0);
@@ -133,10 +146,10 @@ void loop() {
       }
       //randomly pick an action
       action=random(n_actions);
+      Serial.print(n_obs);
       ECE3_read_IR(sensorValues);
       reward=0;
-      reversing=add_to_memory(sensorValues, action, reward);
-      actions_to_motor(action);
+      reversing=!add_to_memory(sensorValues, action, reward);
       delay(5);
       if (reversing){
         //setup for reversing
@@ -150,6 +163,10 @@ void loop() {
         digitalWrite(left_dir_pin,HIGH);
         digitalWrite(left_nslp_pin,HIGH);
       }
+      actions_to_motor(action);
+    }
+    if (!done){
+      Serial.println();
     }
     
 
