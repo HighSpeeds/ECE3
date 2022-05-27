@@ -104,7 +104,7 @@ void send1dArray(Value Array[],int array_size){
 }
 
 template<typename Value>
-void send2dArray(Value Array[][2],int dim1,int dim2){
+void send2dArray(Value** Array,int dim1,int dim2){
   //assume second dim is 2
   Serial.print(dim1);
   Serial.print(",");
@@ -289,10 +289,11 @@ class Model{
 //with 8 inputs and num_actions outputs
 int layer_sizes[num_actions-1]={4};
 Model model(8,num_actions,2,layer_sizes);
-
+model.num_layers();
 //get the action the model chose
 float output[num_actions];
-int model_pick_action(){
+
+int model_pick_action(int model){
   model.forward(state,output);
   int max_index=0;
   float max_value=output[0];
