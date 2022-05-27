@@ -113,9 +113,78 @@ void read2dArray(float **Array,int rows,int cols){
 
 
 //matrix multiplication
-//actually multiply a matrix by a vector
-//float* matmul(
+// //actually multiply a matrix by a vector
+// void matmul(float **matrix,float input_vec[],float output_vec[],int rows,int cols){
+//   for (int i=0; i<rows; i++){
+//     for (int j=0; j<cols; j++){
+//       output_vec[i]+=matrix[i][j]*input_vec[j];
+//     }
+//   }
+  
+// }
 
+
+//linear layer class
+class LinearyLayer{
+  public:
+    LinearyLayer(int input_size,int output_size){
+      input_size_=input_size;
+      output_size_=output_size;
+      weights_=new float*[output_size];
+      for (int i=0; i<output_size; i++){
+        weights_[i]=new float[input_size];
+      }
+      biases_=new float[output_size];
+      for (int i=0; i<output_size; i++){
+        biases_[i]=0;
+      }
+      for (int i=0; i<output_size; i++){
+        for (int j=0; j<input_size; j++){
+          weights_[i][j]=0;
+        }
+      }
+    }
+    void ~LinearyLayer(){
+      for (int i=0; i<output_size_; i++){
+        delete[] weights_[i];
+      }
+      delete[] weights_;
+      delete[] biases_;
+    }
+    void setWeights(){
+      read2dArray(weights_,output_size_,input_size_);
+    }
+    void setBiases(float *biases){
+      read1dArray(biases_,output_size_);
+    }
+    void forward(float input[],float output[]){
+      for (int i=0; i<output_size_; i++){
+        output[i]=0;
+        for (int j=0; j<input_size_; j++){
+          output[i]+=input[j]*weights_[i][j];
+        }
+        output[i]+=biases_[i];
+      }
+    }
+    private:
+      int input_size_;
+      int output_size_;
+      float **weights_;
+      float *biases_;
+};
+
+
+//RELU function
+void relu(float input[],float output[],int size){
+  for (int i=0; i<size; i++){
+    if (input[i]>0){
+      output[i]=input[i];
+    }
+    else{
+      output[i]=0;
+    }
+  }
+}
 
 
 //uint16_t testArray[5]={1,2,3,4,5};
