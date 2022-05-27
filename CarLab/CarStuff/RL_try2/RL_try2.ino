@@ -7,6 +7,14 @@ const int bump_sw_3_pin = 27;
 const int bump_sw_4_pin = 8;
 const int bump_sw_5_pin = 28;
 
+const int left_nslp_pin=31; // nslp ==> awake & ready for PWM
+const int left_dir_pin=29;
+const int left_pwm_pin=40;
+
+const int right_nslp_pin=11; // nslp ==> awake & ready for PWM
+const int right_dir_pin=30;
+const int right_pwm_pin=39;
+
 
 const int LED_RF = 77;
 const int LED_GREEN=76;
@@ -26,7 +34,24 @@ void setup() {
   pinMode(bump_sw_3_pin,INPUT_PULLUP);
   pinMode(bump_sw_4_pin,INPUT_PULLUP);
   pinMode(bump_sw_5_pin,INPUT_PULLUP);
-  fillArray();
+//  fillArray();
+
+  pinMode(left_nslp_pin,OUTPUT);
+  pinMode(left_dir_pin,OUTPUT);
+  pinMode(left_pwm_pin,OUTPUT);
+
+  digitalWrite(left_dir_pin,LOW);
+  digitalWrite(left_nslp_pin,HIGH);
+  
+  pinMode(right_nslp_pin,OUTPUT);
+  pinMode(right_dir_pin,OUTPUT);
+  pinMode(right_pwm_pin,OUTPUT);
+
+  digitalWrite(right_dir_pin,LOW);
+  digitalWrite(right_nslp_pin,HIGH);
+
+  //set the green led on
+  digitalWrite(LED_GREEN,HIGH);
 }
 
 
@@ -124,8 +149,8 @@ static const int num_actions=8;
 
 //convert states to motor speeds
 void setMotor(int n_action){
-  analogWrite(left_pwm_pin,possible_actions[n_action][1]);
-  analogWrite(right_pwm_pin,possible_actions[n_action][0]);
+  analogWrite(left_pwm_pin,possibleActions[n_action][1]);
+  analogWrite(right_pwm_pin,possibleActions[n_action][0]);
   
 }
 
@@ -153,7 +178,7 @@ class LinearyLayer{
         }
       }
     }
-    void ~LinearyLayer(){
+    ~LinearyLayer(){
       for (int i=0; i<output_size_; i++){
         delete[] weights_[i];
       }
@@ -166,7 +191,12 @@ class LinearyLayer{
     void setBiases(float *biases){
       read1dArray(biases_,output_size_);
     }
-
+    void printWeights(){
+      send2dArray(weights_,output_size_,input_size_);
+    }
+    void printBiases(){
+      send1dArray(biases_,output_size_);
+    }
     float ** getWeights(){
       return weights_;
     }
@@ -213,13 +243,13 @@ class Model{
       layers_=new LinearyLayer*[num_layers_];
       layer_sizes_=new int[num_layers_-1];
       
-      layers[0]=new LinearyLayer(input_size_,layer_sizes[0]);
+      layers_[0]=new LinearyLayer(input_size_,layer_sizes[0]);
       layer_sizes_[0]=layer_sizes[0];
       for (int i=0; i<num_layers_-2; i++){
         layers_[i+1]=new LinearyLayer(layer_sizes[i],layer_sizes[i+1]);
         layer_sizes_[i+1]=layer_sizes[i+1];
       }
-      layers[num_layers_-1]=new LinearyLayer(layer_sizes[num_layers_-2],output_size_);
+      layers_[num_layers_-1]=new LinearyLayer(layer_sizes[num_layers_-2],output_size_);
       layer_sizes_[num_layers_-1]=output_size_;
     }
 
@@ -229,6 +259,10 @@ class Model{
       }
       delete[] layers_;
       delete[] layer_sizes_;
+    }
+
+    int num_layers(){
+      return num_layers_;
     }
 
     void forward(float input[],float output[]){
@@ -256,33 +290,134 @@ class Model{
 int layer_sizes[num_actions-1]={4};
 Model model(8,num_actions,2,layer_sizes);
 
+//get the action the model chose
+float output[num_actions];
+int model_pick_action(){
+  model.forward(state,output);
+  int max_index=0;
+  float max_value=output[0];
+  for (int i=1; i<num_actions; i++){
+    if (output[i]>max_value){
+      max_value=output[i];
+      max_index=i;
+    }
+  }
+  return max_index;
+}
+
 //function to decide whether the model will pick the next action,
 // or the action will be randomly selected
 int SelectAction(int p_random){
+  if (p_random*100>random(100)){
+    return random_action();
+  }
+  else{
+    return model_pick_action();
+  }
+}
 
+
+//setup memory
+static const int max_obs=1000;
+uint16_t states[max_obs][8];
+int actions[max_obs];
+float rewards[max_obs];
+int num_obs=0;
+
+bool AddValue(int state[],int action,float reward){
+  if (num_obs<max_obs){
+    for (int i=0; i<8; i++){
+      states[num_obs][i]=state[i];
+    }
+    actions[num_obs]=action;
+    rewards[num_obs]=reward;
+    num_obs++;
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+
+//dumping the memory to serial
+void dump_memory(){
+  Serial.print("memory dump")
+  Serial.println();
+  Serial.print(num_obs);
+  Serial.println("");
+  Serial.println("actions:")
+  send1dArray(actions,num_obs);
+  Serial.println("rewards:")
+  send1dArray(rewards,num_obs);
+  Serial.println("states:")
+  send2dArray(states,num_obs,8);
+  Serial.println("done")
+}
+
+//dumping the model to serial
+void dump_model(){
+  for (int i=0; i<model.num_layers();i++){
+    Serial.print("layer ");
+    Serial.print(i);
+    Serial.println("");
+    Serial.println("weights:")
+    model.getLinearLayer(0)->printWeights();
+    Serial.println("biases:")
+    model.getLinearLayer(0)->printBiases();
+  }
+  Serial.println("done")
 }
 
 
 
 
+uint16_t sensorValues[8];
 
-
+bool mem_full=false;
+int action_selected;
+bool val=false;
+float p_random=0.5;
+float reward;
 
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
-  //fillArray();
-//  digitalWrite(LED_RF, HIGH);
-//  delay(250);
-//  digitalWrite(LED_RF, LOW);
-//  delay(250);
+  
+  if (!mem_full && !val){
+    //read sensor values
+    ECE3_read_IR(sensorValues);
+    //pick an action
+    action=SelectAction(p_random);
+    //set motor speeds based of this action
+    set_motors(action);
+    //wait 50 ms
+    delay(50);
+    //calculate reward (not implemented so set reward to 0 for now)
+    reward=0;
+    //add to memory
+    mem_full=AddValue(sensorValues,action,reward);
+  }
+  
+  //if the memory is full and still in train mode
+  //turn off the green led
+  if (mem_full && !val){
+    digitalWrite(LED_GREEN,LOW);
+    //and turn on the RF led
+    digitalWrite(LED_RF,HIGH);
+  }
+  }
   if(!bump_sw_4){
-    digitalWrite(LED_RF, HIGH);
-    delay(800);
-    read2dArray(testArray2d,5,2);
-    delay(2500);
+    //if the 4th bumper is pressed
     
+    //turn off the RF led
     digitalWrite(LED_RF, LOW);
+    //and turn on the green led
+    digitalWrite(LED_GREEN, HIGH);
+    //set the num_obs to 0
+    num_obs=0;
+    //set mem_full to false
+    mem_full=false;
   }
 
 }
