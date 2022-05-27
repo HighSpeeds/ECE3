@@ -110,20 +110,29 @@ void read2dArray(float **Array,int rows,int cols){
     }
   }
 }
+//set the actions
 
+uint16_t possibleActions[8][2]={{0,0},
+              {50,50},
+              {50,0},
+              {0,50},
+              {100,100},
+              {100,50},
+              {50,100},
+              {200,200}};
+static const int num_actions=8;
 
-//matrix multiplication
-// //actually multiply a matrix by a vector
-// void matmul(float **matrix,float input_vec[],float output_vec[],int rows,int cols){
-//   for (int i=0; i<rows; i++){
-//     for (int j=0; j<cols; j++){
-//       output_vec[i]+=matrix[i][j]*input_vec[j];
-//     }
-//   }
+//convert states to motor speeds
+void setMotor(int n_action){
+  analogWrite(left_pwm_pin,possible_actions[n_action][1]);
+  analogWrite(right_pwm_pin,possible_actions[n_action][0]);
   
-// }
+}
 
-
+//random pick a state
+int random_action(){
+  return random(num_actions);
+}
 //linear layer class
 class LinearyLayer{
   public:
@@ -157,6 +166,14 @@ class LinearyLayer{
     void setBiases(float *biases){
       read1dArray(biases_,output_size_);
     }
+
+    float ** getWeights(){
+      return weights_;
+    }
+
+    float * getBiases(){
+      return biases_;
+    }
     void forward(float input[],float output[]){
       for (int i=0; i<output_size_; i++){
         output[i]=0;
@@ -186,17 +203,65 @@ void relu(float input[],float output[],int size){
   }
 }
 
+class Model{
+  public:
+    Model(int input_size, int output_size, int num_layers, int layer_sizes[]){
+      input_size_=input_size;
+      output_size_=output_size;
+      num_layers_=num_layers;
 
-//uint16_t testArray[5]={1,2,3,4,5};
+      layers_=new LinearyLayer*[num_layers_];
+      layer_sizes_=new int[num_layers_-1];
+      
+      layers[0]=new LinearyLayer(input_size_,layer_sizes[0]);
+      layer_sizes_[0]=layer_sizes[0];
+      for (int i=0; i<num_layers_-2; i++){
+        layers_[i+1]=new LinearyLayer(layer_sizes[i],layer_sizes[i+1]);
+        layer_sizes_[i+1]=layer_sizes[i+1];
+      }
+      layers[num_layers_-1]=new LinearyLayer(layer_sizes[num_layers_-2],output_size_);
+      layer_sizes_[num_layers_-1]=output_size_;
+    }
 
-float testArray[5]={1,1,1,1,1};
-float **testArray2d=new float *[5];
+    ~Model(){
+      for (int i=0; i<num_layers_; i++){
+        delete layers_[i];
+      }
+      delete[] layers_;
+      delete[] layer_sizes_;
+    }
 
-void fillArray(){for (int i=0; i<5; i++){testArray2d[i] = new float[2];}
-        for (int i=0; i<5; i++){
-      for (int j=0; j<2; j++){
-        testArray2d[i][j]=0;
-      }}}
+    void forward(float input[],float output[]){
+      for (int i=0; i<num_layers_; i++){
+        layers_[i]->forward(input,output);
+        relu(output,output,layer_sizes_[i]);
+      }
+    }
+
+    LinearyLayer* getLinearLayer(int i){
+      return layers_[i];
+    }
+
+  private:
+    int input_size_;
+    int output_size_;
+    int num_layers_;
+    int *layer_sizes_;
+    LinearyLayer **layers_;
+
+};
+
+//define our model, which we will first set as a 2 layer linear model
+//with 8 inputs and num_actions outputs
+int layer_sizes[num_actions-1]={4};
+Model model(8,num_actions,2,layer_sizes);
+
+//function to decide whether the model will pick the next action,
+// or the action will be randomly selected
+int SelectAction(int p_random){
+
+}
+
 
 
 
@@ -220,17 +285,4 @@ void loop() {
     digitalWrite(LED_RF, LOW);
   }
 
-  if (!bump_sw_5){
-    digitalWrite(LED_GREEN, HIGH);
-    delay(800);
-    for (int i=0; i<5; i++){
-      for (int j=0; j<2; j++){
-        Serial.print(testArray2d[i][j]);
-        Serial.print(",");
-      }
-      Serial.println();
-    }
-    digitalWrite(LED_GREEN,LOW);
-    
-  }
 }
