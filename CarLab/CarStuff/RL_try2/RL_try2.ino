@@ -26,6 +26,7 @@ void setup() {
   pinMode(bump_sw_3_pin,INPUT_PULLUP);
   pinMode(bump_sw_4_pin,INPUT_PULLUP);
   pinMode(bump_sw_5_pin,INPUT_PULLUP);
+  fillArray();
 }
 
 
@@ -102,20 +103,33 @@ void read1dArray(float Array[],int s){
 }
 
 
-void read2dArray(float Array[][2],int rows){
+void read2dArray(float **Array,int rows,int cols){
   for (int i=0; i<rows; i++){
-    for (int j=0; j<2; j++){
+    for (int j=0; j<cols; j++){
       Array[i][j]=Serial.parseFloat();
     }
   }
 }
 
 
+//matrix multiplication
+//actually multiply a matrix by a vector
+//float* matmul(
+
+
 
 //uint16_t testArray[5]={1,2,3,4,5};
 
 float testArray[5]={1,1,1,1,1};
-float testArray2d[5][2];
+float **testArray2d=new float *[5];
+
+void fillArray(){for (int i=0; i<5; i++){testArray2d[i] = new float[2];}
+        for (int i=0; i<5; i++){
+      for (int j=0; j<2; j++){
+        testArray2d[i][j]=0;
+      }}}
+
+
 
 
 
@@ -123,6 +137,7 @@ float testArray2d[5][2];
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
+  //fillArray();
 //  digitalWrite(LED_RF, HIGH);
 //  delay(250);
 //  digitalWrite(LED_RF, LOW);
@@ -130,7 +145,7 @@ void loop() {
   if(!bump_sw_4){
     digitalWrite(LED_RF, HIGH);
     delay(800);
-    read2dArray(testArray2d,5);
+    read2dArray(testArray2d,5,2);
     delay(2500);
     
     digitalWrite(LED_RF, LOW);
