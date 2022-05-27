@@ -92,14 +92,34 @@ void send2dArray(Value Array[][2],int dim1,int dim2){
 }
 
 
+//read in arrays
+//we will only need float arrays so
 
-uint16_t testArray[5]={1,2,3,4,5};
+void read1dArray(float Array[],int s){
+  for (int i=0; i<s; i++){
+    Array[i]=Serial.parseFloat();
+  }
+}
 
-uint16_t testArray2d[5][2]={{1,1},
-                            {2,2},
-                            {3,3},
-                            {4,4},
-                            {5,5}};
+
+void read2dArray(float Array[][2],int rows){
+  for (int i=0; i<rows; i++){
+    for (int j=0; j<2; j++){
+      Array[i][j]=Serial.parseFloat();
+    }
+  }
+}
+
+
+
+//uint16_t testArray[5]={1,2,3,4,5};
+
+float testArray[5]={1,1,1,1,1};
+float testArray2d[5][2];
+
+
+
+
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
@@ -109,11 +129,24 @@ void loop() {
 //  delay(250);
   if(!bump_sw_4){
     digitalWrite(LED_RF, HIGH);
-    digitalWrite(LED_GREEN, LOW);
     delay(800);
-    send2dArray(testArray2d,5,2);
+    read2dArray(testArray2d,5);
     delay(2500);
     
     digitalWrite(LED_RF, LOW);
+  }
+
+  if (!bump_sw_5){
+    digitalWrite(LED_GREEN, HIGH);
+    delay(800);
+    for (int i=0; i<5; i++){
+      for (int j=0; j<2; j++){
+        Serial.print(testArray2d[i][j]);
+        Serial.print(",");
+      }
+      Serial.println();
+    }
+    digitalWrite(LED_GREEN,LOW);
+    
   }
 }
