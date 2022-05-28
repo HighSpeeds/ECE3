@@ -56,9 +56,6 @@ void setup() {
 //  digitalWrite(LED_GREEN,HIGH);
 }
 
-
-
-
 bool bump_sw_0=true;
 bool bump_sw_1=true;
 bool bump_sw_2=true;
@@ -310,6 +307,14 @@ void relu(float input[],int size){
   }
 }
 
+void relu_derivative(float input[],float input_derivative[],int size){
+  for (int i=0; i<size; i++){
+    if (input[i]<0){
+      input_derivative[i]=0;
+    }
+  }
+}
+
 class Model{
   public:
     Model(int input_size, int output_size, int num_layers, int layer_sizes[]){
@@ -424,6 +429,8 @@ class Model{
         hiddenLayerOutputs[i]=new float[layer_sizes_[i]];
         //Serial.println("dynamically alocated a hidden layer");
         layers_[i]->forward(input,hiddenLayerOutputs[i]);
+        //pass through relu
+        relu(hiddenLayerOutputs[i],layer_sizes_[i]);
         //Serial.println("forwad passed");
         input=hiddenLayerOutputs[i];
         //Serial.print("passed through layer: ");
@@ -448,6 +455,8 @@ class Model{
         delete[] dLdX_temp;
         
         dLdX_temp=new float[layer_sizes_[i]];
+        //pass dLdX_temp_old through relu
+        relu_derivative(hiddenLayerOutputs[i-1],dLdX_temp_old,layer_sizes_[i]);
         //backprop through hidden layers
         layers_[i]->backwards(dLdX_temp_old,dLdX_temp);
         //update hidden layer parameters
@@ -457,7 +466,8 @@ class Model{
         dLdX_temp_old=dLdX_temp;
       }
       //update the first layers weights
-      layers_[0]->updateWeights(input,dLdX_temp,learning_rate);
+      relu_derivative(hiddenLayerOutputs[i-1],dLdX_temp_old,layer_sizes_[i]);
+      layers_[0]->updateWeights(input,dLdX_temp_old,learning_rate);
       delete[] dLdX_temp;
       for (int i=0; i<num_layers_-1; i++){
         delete[] hiddenLayerOutputs[i];
@@ -533,7 +543,9 @@ SmoothL1Loss loss(beta);
 //define our model, which we will first set as a 2 layer linear model
 //with 8 inputs and num_actions outputs
 int layer_sizes[2]={4};
-Model model(8,num_actions,2,layer_sizes);
+Model target_model(8,num_actions,2,layer_sizes);
+
+Model policy_model(8,num_actions,2,layer_sizes);
 
 //get the action the model chose
 float output[num_actions];
@@ -614,6 +626,24 @@ class Memory{
       else{
         return false;
       }
+    }
+
+    void Sample(uint16_t state[],uint16_t next_state[],int &action,float &reward){
+      //random samples an index
+      int index=random(obs_count_-1);
+      //get the state
+      for (int i=0; i<8; i++){
+        state[i]=states_[index][i];
+      }
+      //get the action
+      action=actions_[index];
+      //get the reward
+      reward=rewards_[index];
+      //get the next state
+      for (int i=0; i<8; i++){
+        next_state[i]=states_[index+1][i];
+      }
+
     }
 
     void Reset(){
