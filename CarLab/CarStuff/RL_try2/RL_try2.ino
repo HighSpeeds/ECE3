@@ -187,6 +187,50 @@ class LinearyLayer{
       delete[] weights_;
       delete[] biases_;
     }
+
+    //assigment operator
+    LinearyLayer& operator=(const LinearyLayer& other){
+      input_size_=other.input_size_;
+      output_size_=other.output_size_;
+      //delete weights and biases first
+      for (int i=0; i<output_size_; i++){
+        delete[] weights_[i];
+      }
+      delete[] weights_;
+      delete[] biases_;
+      weights_=new float*[output_size_];
+      for (int i=0; i<output_size_; i++){
+        weights_[i]=new float[input_size_];
+      }
+      biases_=new float[output_size_];
+      for (int i=0; i<output_size_; i++){
+        biases_[i]=other.biases_[i];
+      }
+      for (int i=0; i<output_size_; i++){
+        for (int j=0; j<input_size_; j++){
+          weights_[i][j]=other.weights_[i][j];
+        }
+      }
+      return *this;
+    }
+    //copy constructor
+    LinearyLayer(const LinearyLayer& other){
+      input_size_=other.input_size_;
+      output_size_=other.output_size_;
+      weights_=new float*[output_size_];
+      for (int i=0; i<output_size_; i++){
+        weights_[i]=new float[input_size_];
+      }
+      biases_=new float[output_size_];
+      for (int i=0; i<output_size_; i++){
+        biases_[i]=other.biases_[i];
+      }
+      for (int i=0; i<output_size_; i++){
+        for (int j=0; j<input_size_; j++){
+          weights_[i][j]=other.weights_[i][j];
+        }
+      }
+    }
     void serialSetWeights(){
       read2dArray(weights_,output_size_,input_size_);
     }
@@ -230,7 +274,7 @@ class LinearyLayer{
       }
     }
 
-    void backwards(float dLdY[],float output[],float dLdX[]){
+    void backwards(float dLdY[],float dLdX[]){
 
       //output dL/dX
       for (int i=0; i<input_size_; i++){
@@ -241,10 +285,10 @@ class LinearyLayer{
       }
     }
 
-    void updateWeights(float input[],float output[],float dLdY[],float learning_rate){
+    void updateWeights(float input[],float dLdY[],float learning_rate){
       for (int i=0; i<output_size_; i++){
         for (int j=0; j<input_size_; j++){
-          weights_[i][j]-=learning_rate*dLdY[i]*input[j];
+          weights_[i][j]+=learning_rate*dLdY[i]*input[j];
         }
         biases_[i]+=learning_rate*dLdY[i];
       }
@@ -288,6 +332,46 @@ class Model{
       // send1dArray(layer_sizes_,num_layers_-1);
     }
 
+    //assigment operator
+    Model& operator=(const Model& other){
+      input_size_=other.input_size_;
+      output_size_=other.output_size_;
+      num_layers_=other.num_layers_;
+      //delete layer sizes
+      delete[] layer_sizes_;
+      layer_sizes_=new int[num_layers_-1];
+      for (int i=0; i<num_layers_-1; i++){
+        layer_sizes_[i]=other.layer_sizes_[i];
+      }
+      for (int i=0; i<num_layers_; i++){
+        delete layers_[i];
+      }
+      delete[] layers_;
+      layers_=new LinearyLayer*[num_layers_];
+      for (int i=0; i<num_layers_-1; i++){
+        layers_[i]=new LinearyLayer(layer_sizes_[i],layer_sizes_[i+1]);
+      }
+      layers_[num_layers_-1]=new LinearyLayer(layer_sizes_[num_layers_-2],output_size_);
+      return *this;
+    }
+
+    //copy constructor
+    Model(const Model& other){
+      input_size_=other.input_size_;
+      output_size_=other.output_size_;
+      num_layers_=other.num_layers_;
+      layer_sizes_=new int[num_layers_-1];
+      for (int i=0; i<num_layers_-1; i++){
+        layer_sizes_[i]=other.layer_sizes_[i];
+      }
+      layers_=new LinearyLayer*[num_layers_];
+      for (int i=0; i<num_layers_-1; i++){
+        layers_[i]=new LinearyLayer(layer_sizes_[i],layer_sizes_[i+1]);
+      }
+      layers_[num_layers_-1]=new LinearyLayer(layer_sizes_[num_layers_-2],output_size_);
+    }
+
+
     ~Model(){
       for (int i=0; i<num_layers_; i++){
         delete layers_[i];
@@ -329,11 +413,56 @@ class Model{
       layers_[num_layers_-1]->forward(input,output);
     }
 
-    void backwards(float dLdY[],float output[],float dLdX[]){
-
-      float * dLdX_temp;
-      for (int i=num_layers_-1; i>=0; i--){
+    void backwards(float input[], float dLdY[],float learning_rate){
+      //Serial.println("forward passing");
+      float **hiddenLayerOutputs=new float*[num_layers_-1];
+      //Serial.println("dynamically created a 2d array");
+      //forward pass through, but save the outputs of each layer
+      for (int i=0; i<num_layers_-1; i++){
+        //Serial.print("passing through layer: ");
+        //Serial.println(i);
+        hiddenLayerOutputs[i]=new float[layer_sizes_[i]];
+        //Serial.println("dynamically alocated a hidden layer");
+        layers_[i]->forward(input,hiddenLayerOutputs[i]);
+        //Serial.println("forwad passed");
+        input=hiddenLayerOutputs[i];
+        //Serial.print("passed through layer: ");
+        //Serial.println(i);
       }
+      //Serial.println("finished the forward pass");
+
+      float * dLdX_temp=new float[layer_sizes_[num_layers_-2]];
+      float * dLdX_temp_old;
+
+      //backprop through last layer
+      layers_[num_layers_-1]->backwards(dLdY,dLdX_temp);
+      //update last layer parameters
+      layers_[num_layers_-1]->updateWeights(hiddenLayerOutputs[num_layers_-2],dLdY,learning_rate);
+      dLdX_temp_old=dLdX_temp;
+      //Serial.print("updated weights for layer");
+      //Serial.println(num_layers_-1);
+      for (int i=num_layers_-2; i>0; i--){
+        //Serial.print("trying to update the weights for layer");
+        //Serial.println(i);
+        //delete dLdX
+        delete[] dLdX_temp;
+        
+        dLdX_temp=new float[layer_sizes_[i]];
+        //backprop through hidden layers
+        layers_[i]->backwards(dLdX_temp_old,dLdX_temp);
+        //update hidden layer parameters
+        layers_[i]->updateWeights(hiddenLayerOutputs[i-1],dLdX_temp,learning_rate);
+        //Serial.print("updated weights for layer");
+        //Serial.println(i);
+        dLdX_temp_old=dLdX_temp;
+      }
+      //update the first layers weights
+      layers_[0]->updateWeights(input,dLdX_temp,learning_rate);
+      delete[] dLdX_temp;
+      for (int i=0; i<num_layers_-1; i++){
+        delete[] hiddenLayerOutputs[i];
+      }
+      delete[] hiddenLayerOutputs;
     }
     LinearyLayer* getLinearLayer(int i){
       return layers_[i];
@@ -349,12 +478,62 @@ class Model{
 };
 
 
+class SmoothL1Loss{
+  public:
+    SmoothL1Loss(float beta)
+    {
+      beta_=beta;
+    }
+    float CalculateLossForOneSample(float output, float target){
+      float loss=0;
+      float diff=abs(output-target);
+      if (diff<=beta_){
+        loss=0.5*diff*diff/beta_;
+      }
+      else{
+        loss=diff-0.5*beta_;
+      }
+      return loss;
+    }
 
+    float CalculateLossDerivativeForOneSample(float output, float target){
+      float diff=output-target;
+      if (abs(diff)<=beta_){
+        return diff/beta_;
+      }
+      else{
+        if (diff>0){
+          return 1;
+        }
+        else{
+          return -1;
+        }
+      }
+    }
+
+    float CalculateLoss(float output[], float target[], int size){
+      float loss=0;
+      for (int i=0; i<size; i++){
+        loss+=CalculateLossForOneSample(output[i],target[i]);
+      }
+      return loss;
+    }
+
+    void CalculateLossDerivative(float output[], float target[], float dLdY[], int size){
+      for (int i=0; i<size; i++){
+        dLdY[i]=CalculateLossDerivativeForOneSample(output[i],target[i]);
+      }
+    }
+  private:
+    float beta_;
+};
+float beta=0.5;
+SmoothL1Loss loss(beta);
 
 //define our model, which we will first set as a 2 layer linear model
 //with 8 inputs and num_actions outputs
-int layer_sizes[2]={4,4};
-Model model(8,num_actions,3,layer_sizes);
+int layer_sizes[2]={4};
+Model model(8,num_actions,2,layer_sizes);
 
 //get the action the model chose
 float output[num_actions];
@@ -425,11 +604,11 @@ class Memory{
         actions_[obs_count_]=action;
         rewards_[obs_count_]=reward;
         obs_count_+=1;
-        Serial.println("Adding Value to memory");
-        Serial.print("max obs");
-        Serial.println(max_obs_);
-        Serial.print("obs_count_");
-        Serial.println(obs_count_);
+        // Serial.println("Adding Value to memory");
+        // Serial.print("max obs");
+        // Serial.println(max_obs_);
+        // Serial.print("obs_count_");
+        // Serial.println(obs_count_);
         return true;
       }
       else{
@@ -547,6 +726,36 @@ void loop() {
     float output[8];
     model.forward(input,output);
     
+    Serial.println("input");
+    send1dArray(input,8);
+    Serial.println("output");
+    send1dArray(output,8);
+    delay(1000);
+  }
+
+  if (!bump_sw_1){
+    float input[8]={1,1,1,1,1,1,1,1};
+    float target[8]={2,2,2,2,2,2,2,2};
+    float output[8];
+    float dLdY[8];
+    for (int i=0; i<100; i++){
+      model.forward(input,output);
+      Serial.println("input");
+      send1dArray(input,8);
+      Serial.println("output");
+      send1dArray(output,8);
+      Serial.println("target");
+      send1dArray(target,8);
+      Serial.println("loss");
+      Serial.println(loss.CalculateLoss(target,output,8));
+      Serial.println("backprop");
+      //calcualte dL/dY
+      loss.CalculateLossDerivative(target,output,dLdY,8);
+      //model backwards
+      model.backwards(input,dLdY,0.01);
+      Serial.println("----------------------");
+    }
+    model.forward(input,output);
     Serial.println("input");
     send1dArray(input,8);
     Serial.println("output");
