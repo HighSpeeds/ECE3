@@ -281,20 +281,50 @@ class LinearyLayer{
         }
       }
     }
-
+    void initializeUpdate(){
+      dLdW_=new float*[output_size_];
+      for (int i=0; i<output_size_; i++){
+        dLdW_[i]=new float[input_size_];
+      }
+      dLdB_=new float[output_size_];
+      //set both to 0
+      for (int i=0; i<output_size_; i++){
+        for (int j=0; j<input_size_; j++){
+          dLdW_[i][j]=0;
+        }
+        dLdB_[i]=0;
+      }
+    }
     void updateWeights(float input[],float dLdY[],float learning_rate){
       for (int i=0; i<output_size_; i++){
         for (int j=0; j<input_size_; j++){
-          weights_[i][j]+=learning_rate*dLdY[i]*input[j];
+          dLdW_[i][j]+=learning_rate*dLdY[i]*input[j];
         }
-        biases_[i]+=learning_rate*dLdY[i];
+        dLdB_[i]+=learning_rate*dLdY[i];
       }
+    }
+
+    void update(){
+      for (int i=0; i<output_size_; i++){
+        for (int j=0; j<input_size_; j++){
+          weights_[i][j]+=dLdW_[i][j];
+        }
+        biases_[i]+=dLdB_[i];
+      }
+      //delete both
+      for (int i=0; i<output_size_; i++){
+        delete[] dLdW_[i];
+      }
+      delete[] dLdW_;
+      delete[] dLdB_;
     }
     private:
       int input_size_;
       int output_size_;
       float **weights_;
       float *biases_;
+      float **dLdW_;
+      float *dLdB_;
 };
 
 
@@ -417,6 +447,13 @@ class Model{
       //pass through last layer
       layers_[num_layers_-1]->forward(input,output);
     }
+    void set_train(){
+      //initializes the updates for each layer
+      for (int i=0; i<num_layers_-1; i++){
+        layers_[i]->initializeUpdate();
+      }
+
+    }
 
     void backwards(float input[], float dLdY[],float learning_rate){
       //Serial.println("forward passing");
@@ -473,6 +510,12 @@ class Model{
         delete[] hiddenLayerOutputs[i];
       }
       delete[] hiddenLayerOutputs;
+    }
+    void update(){
+      //update layers
+      for (int i=0; i<num_layers_; i++){
+        layers_[i]->update();
+      }
     }
     LinearyLayer* getLinearLayer(int i){
       return layers_[i];
@@ -548,14 +591,14 @@ Model target_model(8,num_actions,2,layer_sizes);
 Model policy_model(8,num_actions,2,layer_sizes);
 
 //get the action the model chose
+
 float output[num_actions];
 float float_state[8];
-
 int model_pick_action(uint16_t state[]){
   for (int i=0; i<8; i++){
     float_state[i]=state[i];
   }
-  model.forward(float_state,output);
+  target_model.forward(float_state,output);
   int max_index=0;
   float max_value=output[0];
   for (int i=1; i<num_actions; i++){
@@ -691,8 +734,45 @@ void dump_model(){
   Serial.println("done");
 }
 
-
-
+float Gamma=0.9;
+//train function
+void train(int n_samples,float learning_rate=0.01){
+  //set policy model to train
+  policy_model.set_train();
+  for (int i=0; i<n_samples; i++){
+    float state[8];
+    float next_state[8];
+    int action;
+    float reward;
+    //sample from memory
+    memory.Sample(state,next_state,action,reward);
+    //pass through policy model
+    float output[num_actions];
+    policy_model.forward(state,output);
+    //get the predicted Q values for the action taken state
+    float Q_predicted=output[action];
+    //get the Q values for the next state
+    float Q_next_state[num_actions];
+    //pass through target model
+    target_model.forward(next_state,Q_next_state);
+    //get the max Q value for the next state
+    float max_Q_next_state=Q_next_state[0];
+    for (int j=1; j<num_actions; j++){
+      if (Q_next_state[j]>max_Q_next_state){
+        max_Q_next_state=Q_next_state[j];
+      }
+    }
+    //get the target Q value
+    float target_Q=reward+Gamma*max_Q_next_state;
+    //get the deriative of the loss
+    float dlossdY[8]={0};
+    dlossdY[action]=loss.CalculateLossDerivativeForOneSample(Q_predicted,target_Q);
+    //backpropagate
+    policy_model.backward(state,dlossdY,learning_rate);
+  }
+  //update policy model
+  policy_model.update();
+}
 
 uint16_t sensorValues[8];
 
