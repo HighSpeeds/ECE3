@@ -773,6 +773,34 @@ void train(int n_samples,float learning_rate=0.01){
   //update policy model
   policy_model.update();
 }
+//calculated the reward function
+float getEncoderCount() {
+  return getEncoderCount_left() + getEncoderCount_right();
+}
+
+uint16_t getEncoderCountDifference() {
+  return getEncoderCount_right() - getEncoderCount_left();
+}
+int minX[8]={412, 550, 573, 643, 549, 527, 481, 527};
+int maxNormX[8]={  2088, 1944, 1826, 1708, 1158, 1730, 1894, 1973};
+int weights[8]={8, 4, 2, 1,1,2,4,8};
+
+float calculate_reward() {
+  uint16_t currSensorValues[8];
+  ECE3_read_IR(currSensorValues);
+  float reward = getEncoderCount();
+  //sensor fusion
+  for (int i=0; i<8; i++){
+    reward-=1000*weights[i]*(currSensorValues[i]-minX[i])/maxNormX[i];
+  }
+  return reward;
+}
+
+//transfer the policy model to the target model
+void transferModels(){
+  target_model=policy_model;
+}
+
 
 uint16_t sensorValues[8];
 
@@ -782,33 +810,65 @@ bool val=false;
 float p_random=0;
 float reward;
 
+int batch_size=100;
+float lr=0.01;
+
+int n_runs=0;
+int transfer_every=5;
+
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
   
-  // if (!mem_full && !val){
-  //   //read sensor values
-  //   ECE3_read_IR(sensorValues);
-  //   //pick an action
-  //   action_selected=SelectAction(p_random,sensorValues);
-  //   //set motor speeds based of this action
-  //   setMotor(action_selected);
-  //   //wait 50 ms
-  //   delay(50);
-  //   //calculate reward (not implemented so set reward to 0 for now)
-  //   reward=0;
-  //   //add to memory
-  //   mem_full=!memory.AddValue(sensorValues,action_selected,reward);
-  //   Serial.println(memory.num_obs());
-  // }
+  if (!mem_full && !val){
+    //read sensor values
+    ECE3_read_IR(sensorValues);
+    //pick an action
+    action_selected=SelectAction(p_random,sensorValues);
+    //set motor speeds based of this action
+    setMotor(action_selected);
+    //wait 50 ms
+    delay(50);
+    //calculate reward (not implemented so set reward to 0 for now)
+    reward=calculate_reward();
+    //add to memory
+    mem_full=!memory.AddValue(sensorValues,action_selected,reward);
+  }
   
-  // //if the memory is full and still in train mode
-  // //turn off the green led
-  // if (mem_full && !val){
-  //   digitalWrite(LED_GREEN,LOW);
-  //   //and turn on the RF led
-  //   digitalWrite(LED_RF,HIGH);
-  // }
+  //if the memory is full and still in train mode
+  //turn off the green led
+  if (mem_full && !val){
+    digitalWrite(LED_GREEN,LOW);
+    //and turn on the RF led
+    digitalWrite(LED_RF,HIGH);
+    //train the model
+    digitalWrite(LED_RED,HIGH);
+    train(batch_size,lr);
+    digitalWrite(LED_RED,LOW);
+  }
+
+  if (mem_full && !bump_sw_2){
+    //reset the memory
+    
+    //turn off the RF led
+    digitalWrite(LED_RF,LOW);
+    //and turn on the GREEN led
+    digitalWrite(LED_GREEN,HIGH);
+    //reset the memory
+    memory.Reset();
+    //set mem_full to false
+    mem_full=false;
+    //incrment the number of runs
+    n_runs++;
+    //if the number of runs is divisible by transfer_every
+    //transfer the models
+    if (n_runs%transfer_every==0){
+      digitalWrite(LED_RF,HIGH);
+      transferModels();
+      delay(1000);
+      digitalWrite(LED_RF,LOW);
+    }
+  }
   if(!bump_sw_4){
     //if the 4th bumper is pressed
     
