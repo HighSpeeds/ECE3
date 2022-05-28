@@ -722,14 +722,14 @@ Memory memory(max_obs);
 
 //dumping the model to serial
 void dump_model(){
-  for (int i=0; i<model.num_layers();i++){
+  for (int i=0; i<policy_model.num_layers();i++){
     Serial.print("layer ");
     Serial.print(i);
     Serial.println("");
     Serial.println("weights:");
-    model.getLinearLayer(i)->printWeights();
+    policy_model.getLinearLayer(i)->printWeights();
     Serial.println("biases:");
-    model.getLinearLayer(i)->printBiases();
+    policy_model.getLinearLayer(i)->printBiases();
   }
   Serial.println("done");
 }
@@ -801,6 +801,15 @@ void transferModels(){
   target_model=policy_model;
 }
 
+//helpful function to flash the led
+void flash_led(const int LED_PIN,int n_times,int delay_ms){
+  for (int i=0; i<n_times; i++){
+    digitalWrite(LED_PIN,HIGH);
+    delay(delay_ms);
+    digitalWrite(LED_PIN,LOW);
+    delay(delay_ms);
+  }
+}
 
 uint16_t sensorValues[8];
 
@@ -816,23 +825,44 @@ float lr=0.01;
 int n_runs=0;
 int transfer_every=5;
 
+bool run_car=false;
 void loop() {
   // put your main code here, to run repeatedly:
   read_bumpers();
-  
-  if (!mem_full && !val){
-    //read sensor values
-    ECE3_read_IR(sensorValues);
-    //pick an action
-    action_selected=SelectAction(p_random,sensorValues);
-    //set motor speeds based of this action
-    setMotor(action_selected);
-    //wait 50 ms
-    delay(50);
-    //calculate reward (not implemented so set reward to 0 for now)
-    reward=calculate_reward();
-    //add to memory
-    mem_full=!memory.AddValue(sensorValues,action_selected,reward);
+  if (run_car){
+    if (!mem_full && !val){
+      //read sensor values
+      ECE3_read_IR(sensorValues);
+      //pick an action
+      action_selected=SelectAction(p_random,sensorValues);
+      //set motor speeds based of this action
+      setMotor(action_selected);
+      //wait 50 ms
+      delay(50);
+      //calculate reward (not implemented so set reward to 0 for now)
+      reward=calculate_reward();
+      //add to memory
+      mem_full=!memory.AddValue(sensorValues,action_selected,reward);
+      if (mem_full){
+        run_car=false;
+      }
+    }
+    if (val){
+      //read the sensor values
+      ECE3_read_IR(sensorValues);
+      //select action with the model
+      action_selected=model_pick_action(sensorValues);
+      //set motor speeds based of this action
+      setMotor(action_selected);
+      //wait 50 ms
+      delay(50);
+      //add to memory
+      mem_full=!memory.AddValue(sensorValues,action_selected,0.0);
+      if (mem_full){
+        //restart the memory
+        memory.Reset();
+      }
+    }
   }
   
   //if the memory is full and still in train mode
@@ -869,69 +899,29 @@ void loop() {
       digitalWrite(LED_RF,LOW);
     }
   }
-  if(!bump_sw_4){
-    //if the 4th bumper is pressed
-    
-    //turn off the RF led
-//    digitalWrite(LED_RF, LOW);
-//    //and turn on the green led
-    digitalWrite(LED_GREEN, HIGH);
-    //dump memory
-//    memory.dumpToSerial();
-    //reset memory
-    model.SerialPrintLayerSizes();
-    //set mem_full to false
-    delay(1000);
-    digitalWrite(LED_GREEN, LOW);
-  }
-  if (!bump_sw_3){
-    digitalWrite(LED_RED, HIGH);
+  if (!bump_sw_4 && !bump_sw_2){
+    //dump the model over serial
     dump_model();
-    delay(1000);
-    digitalWrite(LED_RED, LOW);
+    flash_led(LED_GREEN,5,100);
+    flash_led(LED_RF,5,100);
   }
 
-  if (!bump_sw_2){
-    float input[8]={1,1,1,1,1,1,1,1};
-    float output[8];
-    model.forward(input,output);
-    
-    Serial.println("input");
-    send1dArray(input,8);
-    Serial.println("output");
-    send1dArray(output,8);
-    delay(1000);
+  if (!bump_sw_0 && !bump_sw_5){
+    //switch to val mode
+    val=true;
+    flash_led(LED_RF,5,100);
   }
 
-  if (!bump_sw_1){
-    float input[8]={1,1,1,1,1,1,1,1};
-    float target[8]={2,2,2,2,2,2,2,2};
-    float output[8];
-    float dLdY[8];
-    for (int i=0; i<100; i++){
-      model.forward(input,output);
-      Serial.println("input");
-      send1dArray(input,8);
-      Serial.println("output");
-      send1dArray(output,8);
-      Serial.println("target");
-      send1dArray(target,8);
-      Serial.println("loss");
-      Serial.println(loss.CalculateLoss(target,output,8));
-      Serial.println("backprop");
-      //calcualte dL/dY
-      loss.CalculateLossDerivative(target,output,dLdY,8);
-      //model backwards
-      model.backwards(input,dLdY,0.01);
-      Serial.println("----------------------");
-    }
-    model.forward(input,output);
-    Serial.println("input");
-    send1dArray(input,8);
-    Serial.println("output");
-    send1dArray(output,8);
-    delay(1000);
+  if (!bump_sw_5 && !bump_sw_4){
+    //switch to train mode
+    val=false;
+    flash_led(LED_RED,5,100);
   }
 
+  if (!bump_sw_0 && !bump_sw_1){
+    //switch to run mode
+    run_car=true;
+    flash_led(LED_GREEN,5,100);
+  }
   
 }
