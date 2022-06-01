@@ -15,8 +15,8 @@ const int right_pwm_pin = 39;
 
 const uint8_t turnSpeedDonut = 200;
 
-uint16_t baseSpeed = 50;
-float kP = 12;
+uint16_t baseSpeed = 150;
+float kP = 14;
 float kD = 1;
 
 uint16_t slowSpeed = 50;
@@ -132,11 +132,11 @@ void loop()
         if((getEncoderCount()-startEncoder > s_start1 && getEncoderCount()-startEncoder < s_end1) ||
         (numDonuts >= 1 && getEncoderCount()-startEncoder > 2*endEncoder - s_end1 && getEncoderCount()-startEncoder < 2*endEncoder - s_start1) ||
         (numDonuts >=1 && getEncoderCount()-startEncoder < endEncoder+d_slow)){
-//          float turnS = error * kPS + derivative * kDS;
-//          analogWrite(right_pwm_pin,slowSpeed - turnS);
-//          analogWrite(left_pwm_pin,slowSpeed + turnS);
-            analogWrite(right_pwm_pin,baseSpeed - turn);
-            analogWrite(left_pwm_pin,baseSpeed + turn);
+          float turnS = error * kPS + derivative * kDS;
+          analogWrite(right_pwm_pin,slowSpeed - turnS);
+          analogWrite(left_pwm_pin,slowSpeed + turnS);
+          //  analogWrite(right_pwm_pin,baseSpeed - turn);
+          //  analogWrite(left_pwm_pin,baseSpeed + turn);
         }
         else{
           analogWrite(right_pwm_pin,baseSpeed - turn);

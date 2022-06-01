@@ -51,6 +51,9 @@ void setup() {
 
   digitalWrite(right_dir_pin,LOW);
   digitalWrite(right_nslp_pin,HIGH);
+  transferModels();
+
+  Serial.println("running");
 
 //  //set the green led on
 //  digitalWrite(LED_GREEN,HIGH);
@@ -294,6 +297,7 @@ class LinearyLayer{
         }
         dLdB_[i]=0;
       }
+//      Serial.println("initialized update");
     }
     void updateWeights(float input[],float dLdY[],float learning_rate){
       for (int i=0; i<output_size_; i++){
@@ -353,13 +357,14 @@ class Model{
       num_layers_=num_layers;
 
       layers_=new LinearyLayer*[num_layers_];
-      layer_sizes_=new int[num_layers_-1];
-      
+      layer_input_sizes_=new int[num_layers_];
+      layer_output_sizes_=new int int[num_layers_];
+      layer_input_sizes[0]=input_size
       layers_[0]=new LinearyLayer(input_size_,layer_sizes[0]);
-      layer_sizes_[0]=layer_sizes[0];
+      
       for (int i=0; i<num_layers_-2; i++){
         layers_[i+1]=new LinearyLayer(layer_sizes[i],layer_sizes[i+1]);
-        layer_sizes_[i+1]=layer_sizes[i+1];
+        layer_input_sizes_[i+1]=layer_sizes[i+1];
       }
       layers_[num_layers_-1]=new LinearyLayer(layer_sizes[num_layers_-2],output_size_);
 //      layer_sizes_[num_layers_-1]=output_size_;
@@ -378,15 +383,19 @@ class Model{
       for (int i=0; i<num_layers_-1; i++){
         layer_sizes_[i]=other.layer_sizes_[i];
       }
+//      Serial.println("transfered layer sizes");
       for (int i=0; i<num_layers_; i++){
         delete layers_[i];
       }
       delete[] layers_;
+//      Serial.println("transfering layers");
       layers_=new LinearyLayer*[num_layers_];
-      for (int i=0; i<num_layers_-1; i++){
-        layers_[i]=new LinearyLayer(layer_sizes_[i],layer_sizes_[i+1]);
+      for (int i=0; i<num_layers_; i++){
+//        Serial.print("transfering layer ");
+//        Serial.println(i);
+        layers_[i]=other.layers_[i];
       }
-      layers_[num_layers_-1]=new LinearyLayer(layer_sizes_[num_layers_-2],output_size_);
+//      layers_[num_layers_-1]=new LinearyLayer(layer_sizes_[num_layers_-2],output_size_);
       return *this;
     }
 
@@ -424,7 +433,7 @@ class Model{
     }
 
     void SetWeights(float ***weights, float **biases){
-      for (int i=0; i<num_layers_-1; i++){
+      for (int i=0; i<num_layers_; i++){
         layers_[i]->setWeights(weights[i]);
         layers_[i]->setBiases(biases[i]);
       }
@@ -438,9 +447,9 @@ class Model{
           layers_[i]->forward(input,temp_output);
           relu(output,layer_sizes_[i]);
           input=temp_output;
-          Serial.print("layer");
-          Serial.println(i);
-          send1dArray(temp_output,layer_sizes_[i]);
+//          Serial.print("layer");
+//          Serial.println(i);
+//          send1dArray(temp_output,layer_sizes_[i]);
           delete[] temp_output;
 
       }
@@ -449,18 +458,21 @@ class Model{
     }
     void set_train(){
       //initializes the updates for each layer
-      for (int i=0; i<num_layers_-1; i++){
+//      Serial.println("setting to train");
+      for (int i=0; i<num_layers_; i++){
+//        Serial.println(i);
         layers_[i]->initializeUpdate();
       }
 
     }
 
     void backwards(float input[], float dLdY[],float learning_rate){
-      //Serial.println("forward passing");
-      float **hiddenLayerOutputs=new float*[num_layers_-1];
-      //Serial.println("dynamically created a 2d array");
+//      Serial.println("forward passing");
+      float **hiddenLayerOutputs=new float*[num_layers_];
+      
+//      Serial.println("dynamically created a 2d array");
       //forward pass through, but save the outputs of each layer
-      for (int i=0; i<num_layers_-1; i++){
+      for (int i=0; i<=num_layers_; i++){
         //Serial.print("passing through layer: ");
         //Serial.println(i);
         hiddenLayerOutputs[i]=new float[layer_sizes_[i]];
@@ -473,7 +485,7 @@ class Model{
         //Serial.print("passed through layer: ");
         //Serial.println(i);
       }
-      //Serial.println("finished the forward pass");
+//      Serial.println("finished the forward pass");
 
       float * dLdX_temp=new float[layer_sizes_[num_layers_-2]];
       float * dLdX_temp_old;
@@ -483,11 +495,11 @@ class Model{
       //update last layer parameters
       layers_[num_layers_-1]->updateWeights(hiddenLayerOutputs[num_layers_-2],dLdY,learning_rate);
       dLdX_temp_old=dLdX_temp;
-      //Serial.print("updated weights for layer");
-      //Serial.println(num_layers_-1);
+//      Serial.print("updated weights for layer");
+//      Serial.println(num_layers_-1);
       for (int i=num_layers_-2; i>0; i--){
-        //Serial.print("trying to update the weights for layer");
-        //Serial.println(i);
+//        Serial.print("trying to update the weights for layer");
+//        Serial.println(i);
         //delete dLdX
         delete[] dLdX_temp;
         
@@ -498,12 +510,12 @@ class Model{
         layers_[i]->backwards(dLdX_temp_old,dLdX_temp);
         //update hidden layer parameters
         layers_[i]->updateWeights(hiddenLayerOutputs[i-1],dLdX_temp,learning_rate);
-        //Serial.print("updated weights for layer");
-        //Serial.println(i);
+//        Serial.print("updated weights for layer");
+//        Serial.println(i);
         dLdX_temp_old=dLdX_temp;
       }
       //update the first layers weights
-      relu_derivative(hiddenLayerOutputs[i-1],dLdX_temp_old,layer_sizes_[i]);
+      relu_derivative(hiddenLayerOutputs[0],dLdX_temp_old,layer_sizes_[0]);
       layers_[0]->updateWeights(input,dLdX_temp_old,learning_rate);
       delete[] dLdX_temp;
       for (int i=0; i<num_layers_-1; i++){
@@ -671,7 +683,7 @@ class Memory{
       }
     }
 
-    void Sample(uint16_t state[],uint16_t next_state[],int &action,float &reward){
+    void Sample(float state[],float next_state[],int &action,float &reward){
       //random samples an index
       int index=random(obs_count_-1);
       //get the state
@@ -721,7 +733,7 @@ class Memory{
 Memory memory(max_obs);
 
 //dumping the model to serial
-void dump_model(){
+void dump_policy_model(){
   for (int i=0; i<policy_model.num_layers();i++){
     Serial.print("layer ");
     Serial.print(i);
@@ -733,6 +745,21 @@ void dump_model(){
   }
   Serial.println("done");
 }
+
+
+void dump_target_model(){
+  for (int i=0; i<target_model.num_layers();i++){
+    Serial.print("layer ");
+    Serial.print(i);
+    Serial.println("");
+    Serial.println("weights:");
+    target_model.getLinearLayer(i)->printWeights();
+    Serial.println("biases:");
+    target_model.getLinearLayer(i)->printBiases();
+  }
+  Serial.println("done");
+}
+
 
 float Gamma=0.9;
 //train function
@@ -768,7 +795,7 @@ void train(int n_samples,float learning_rate=0.01){
     float dlossdY[8]={0};
     dlossdY[action]=loss.CalculateLossDerivativeForOneSample(Q_predicted,target_Q);
     //backpropagate
-    policy_model.backward(state,dlossdY,learning_rate);
+    policy_model.backwards(state,dlossdY,learning_rate);
   }
   //update policy model
   policy_model.update();
@@ -900,16 +927,31 @@ void loop() {
     }
   }
   if (!bump_sw_4 && !bump_sw_2){
-    //dump the model over serial
-    dump_model();
+    //dump the policy model over serial
+    Serial.println("policy model");
+    dump_policy_model();
     flash_led(LED_GREEN,5,100);
     flash_led(LED_RF,5,100);
+  }
+
+  if (!bump_sw_4 && !bump_sw_3){
+    //dump the policy model over serial
+    Serial.println("target model");
+    dump_target_model();
+    flash_led(LED_RF,5,100);
+    flash_led(LED_GREEN,5,100);
   }
 
   if (!bump_sw_0 && !bump_sw_5){
     //switch to val mode
     val=true;
     flash_led(LED_RF,5,100);
+  }
+
+    if (!bump_sw_5 && !bump_sw_4){
+    //switch to train mode
+    val=false;
+    flash_led(LED_RED,5,100);
   }
 
   if (!bump_sw_5 && !bump_sw_4){
@@ -923,5 +965,51 @@ void loop() {
     run_car=true;
     flash_led(LED_GREEN,5,100);
   }
+
+  if (!bump_sw_1 && !bump_sw_2){
+    Serial.print("training");
+    Serial.println();
+    float input[8];
+    float target[8]={2,2,2,2,2,2,2,2};
+    float output[8];
+    float dLdY[8];
+    flash_led(LED_GREEN,5,100);
+    for (int i=0; i<10; i++){
+      float total_loss=0;
+      flash_led(LED_RED,5,100);
+      Serial.print("doing epoch");
+      Serial.println(i);
+      policy_model.set_train();
+      for (int k=0; k<5; k++){
+        //initialize input
+        for (int j=0; j<8; j++){input[j]=random(10); target[j]=input[j]*10;}
+//        flash_led(LED_RF,5,100);
+        policy_model.forward(input,output);
+//        flash_led(LED_RF,5,100);
+        total_loss+=loss.CalculateLoss(target,output,8);
+        //calcualte dL/dY
+//        flash_led(LED_GREEN,5,100);
+        loss.CalculateLossDerivative(target,output,dLdY,8);
+        //model backwards
+        policy_model.backwards(input,dLdY,0.01);
+//        flash_led(LED_GREEN,5,100);
+      }
+      Serial.print("total loss for epoch ");
+      Serial.print(i);
+      Serial.print(" loss=");
+      Serial.println(total_loss);
+      policy_model.update();
+      
+    }
+    policy_model.forward(input,output);
+    Serial.println("input");
+    send1dArray(input,8);
+    Serial.println("output");
+    send1dArray(output,8);
+    delay(1000);
+  }
+
+
+  
   
 }
