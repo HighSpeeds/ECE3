@@ -168,9 +168,9 @@ class LinearyLayer{
     void update(){
       for (int i=0; i<output_size_; i++){
         for (int j=0; j<input_size_; j++){
-          weights_[i][j]+=dLdW_[i][j];
+          weights_[i][j]-=dLdW_[i][j];
         }
-        biases_[i]+=dLdB_[i];
+        biases_[i]-=dLdB_[i];
       }
       //delete both
       for (int i=0; i<output_size_; i++){
@@ -478,7 +478,7 @@ int main(){
 
     cerr<<"running"<<endl;
     model.dump();
-    float input[8];
+    float input[8]={4,4,4,4,4,4,4,4};
     float target[8]={2,2,2,2,2,2,2,2};
     float output[8];
     float dLdY[8];
@@ -486,9 +486,9 @@ int main(){
       float total_loss=0;
       cerr<<"running epoch"<<i<<endl;
       model.set_train();
-      for (int k=0; k<5; k++){
+      for (int k=0; k<100; k++){
         //initialize input
-        for (int j=0; j<8; j++){input[j]=random()%10; target[j]=input[j]*10;}
+        for (int j=0; j<8; j++){input[j]=random()%100;}
 //        flash_led(LED_RF,5,100);
         model.forward(input,output);
 //        flash_led(LED_RF,5,100);
@@ -497,12 +497,14 @@ int main(){
 //        flash_led(LED_GREEN,5,100);
         loss.CalculateLossDerivative(target,output,dLdY,8);
         //model backwards
-        model.backwards(input,dLdY,0.01);
+        model.backwards(input,dLdY,+0.0001);
 //        flash_led(LED_GREEN,5,100);
       }
       cerr<<"total loss for epoch "<<i<<" is "<<total_loss<<endl;
       model.update();
-      
+    //   model.dump();
+
+    //     cerr<<"--------------------------------"<<endl;      
     }
     model.forward(input,output);
     cerr<<"input"<<endl;
