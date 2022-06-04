@@ -37,9 +37,9 @@
    \end{center}
 \end{titlepage}
 \section*{Acknowledgements}
-We would like to aknowledge and extend my sincere thanks to Dr. Dennis Briggs who made this project possible.
-His knoweldge of the subject, guidance, and support through the whole quarter carried us through this project.
-We would also like the aknowledge our TAs Dhruv Srinivas and Xin Li for your brilliant comments and suggestions. Furthermore we 
+We would like to acknowledge and extend my sincere thanks to Dr. Dennis Briggs who made this project possible.
+His knowledge of the subject, guidance, and support through the whole quarter carried us through this project.
+We would also like the acknowledge our TAs Dhruv Srinivas and Xin Li for your brilliant comments and suggestions. Furthermore we 
 would like to thank from the bottom of our hearts our wonderful mentors Alexis Aleksandrovich Samoylov and Vaibhav Gupta for their guidance and support.
 \\\\
 Finally we would also want to thank our families, without them none of this would be possible.
@@ -72,24 +72,24 @@ the optimal values for these parameters, we would measure whether the car comple
 the time it took the car to complete the track.
 \section*{Analysis}
 To facilitate the analysis of the system we developed two metrics to quantify how
-the car performed. The first metric was Oscilations, quatified from 5 (full oscilations) to 0 (no oscilations).
-. The second was acceptiblity quantify from 10 (fully acceptiblity) to 0 (not acceptable). This criterion was
+the car performed. The first metric was Oscillations, quantified from 5 (full oscillations) to 0 (no oscilations).
+. The second was acceptability quantify from 10 (fully acceptiblity) to 0 (not acceptable). This criterion was
 based on both the speed of the car, the time it took to complete the track, and how close it came to 
 completing the track if it did not. \\\\
-To analyze how the $k_p$ and $k_d$ values affected these two metrics we ploted a scatter graph of the oscilation and acceptablity
-for all the values of $k_p$ and $k_d$ we experimented with, regradless of the base speed.
+To analyze how the $k_p$ and $k_d$ values affected these two metrics we plotted a scatter graph of the oscilation and acceptablity
+for all the values of $k_p$ and $k_d$ we experimented with, regardless of the base speed.
 \begin{center}
 \includegraphics*[scale=0.3]{KpKiAll.png}
 \end{center}
 However this does not take into account our development path. 
-We first attempted to controll the car with PID at 50 speed. Once this suceeded we increased the speed to 
+We first attempted to control the car with PID at 50 speed. Once this succeeded we increased the speed to 
 100 speed, however the car was unable to keep on the track at this speed. So we focused on making a peicewise PID controller with different base speeds and 
 $k_p$ and $k_d$ values.\\\\
- Since we already had a workign set of values for $k_p$ and $k_d$ for 50 speed, we focused on developing another set of
+ Since we already had a working set of values for $k_p$ and $k_d$ for 50 speed, we focused on developing another set of
 them for 100 speed that could complete everything but the initial chicane. \\\\
 Therefore we would want to take into account these factors, such as the velocity, the battery voltage, and whether we were testing over the 
-entire track. However this would make the data we would want to visulaize to have more than 2 dimensions, so we would
-have to use a dimensionality reduction algorith to reduce the data to 2 dimensions that is plottable. We first try to use
+entire track. However this would make the data we would want to visualize to have more than 2 dimensions, so we would
+have to use a dimensionality reduction algorithm to reduce the data to 2 dimensions that is plottable. We first try to use
 Principal Component Analysis (PCA) to reduce the data to 2 dimensions.
 \begin{center}
     \includegraphics*[scale=0.3]{KpKiAllPCA.png}
@@ -103,6 +103,19 @@ it with K-means at see the average acceptablity for each cluster. K means for 3 
 \begin{center}
     \includegraphics*[scale=0.3]{KpKiAllTSNEKMeans.png}
 \end{center}
-Therefore, K means does sucessfully classify the data into the 3 clusters we would expect
+Therefore, K means does successfully classify the data into the 3 clusters we would expect. The average for the Acceptibility and 
+Oscillation metrics for each cluster are plotted below as a bar graph.
+\begin{center}
+\includegraphics*[scale=0.3]{KpKiAllTSNEKMeansAverage.png}
+\end{center}
+\section*{Interpretation}
+A notable run was our 3rd run with $k_p=5$ and $k_d=0$ as we had not implemented a derivative controller yet
+this run showed that we needed such a term, or we would have to reduce the speed of the car and $k_p$ in order to
+reduce the oscillations. 
+
+\section*{Conclusion}
+From this run mentioned and the runs preceding and after it, we developed the following algorithm to tune the
+$k_p$ and $k_d$: increase $k_p$ until oscillations developed, then increase $k_d$ until the oscillations stoppped.
+and then repeating these two steps until the car was able to achieve the objective for this controller.
 \end{multicols}
 \end{document}

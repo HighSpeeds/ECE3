@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2022.4.22)  4 JUN 2022 15:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2022.4.22)  4 JUN 2022 16:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -318,20 +318,28 @@ Overfull \hbox (26.81166pt too wide) in paragraph at lines 104--105
  [] 
  []
 
-[4 </home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/KpKiAllTSNE.png> </home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/KpKiAllTSNEKMeans.png>] (/home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/file.aux) ) 
+<KpKiAllTSNEKMeansAverage.png, id=36, 361.35pt x 722.7pt>
+File: KpKiAllTSNEKMeansAverage.png Graphic file (type png)
+<use KpKiAllTSNEKMeansAverage.png>
+Package pdftex.def Info: KpKiAllTSNEKMeansAverage.png  used on input line 109.
+(pdftex.def)             Requested size: 108.40584pt x 216.81166pt.
+
+Overfull \vbox (2.17842pt too high) has occurred while \output is active []
+
+ [4 </home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/KpKiAllTSNE.png> </home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/KpKiAllTSNEKMeans.png> </home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/KpKiAllTSNEKMeansAverage.png>] (/home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/file.aux) ) 
 Here is how much of TeX's memory you used:
- 3356 strings out of 481252
- 54319 string characters out of 5915888
+ 3362 strings out of 481252
+ 54506 string characters out of 5915888
  337247 words of memory out of 5000000
- 20294 multiletter control sequences out of 15000+600000
+ 20299 multiletter control sequences out of 15000+600000
  408697 words of font info for 45 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  69i,5n,77p,351b,291s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on /home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/file.pdf (5 pages, 168948 bytes).
+Output written on /home/lawrence/Desktop/UCLA/Classes/ECE3/CarLab/Report/file.pdf (5 pages, 174069 bytes).
 PDF statistics:
- 63 PDF objects out of 1000 (max. 8388607)
- 35 compressed objects within 1 object stream
+ 67 PDF objects out of 1000 (max. 8388607)
+ 36 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 50 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
 
