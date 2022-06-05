@@ -89,28 +89,16 @@ We first attempted to control the car with PID at 50 speed. Once this succeeded 
 100 speed, however the car was unable to keep on the track at this speed. So we focused on making a peicewise PID controller with different base speeds and 
 $k_p$ and $k_d$ values.\\\\
  Since we already had a working set of values for $k_p$ and $k_d$ for 50 speed, we focused on developing another set of
-them for 100 speed that could complete everything but the initial chicane. \\\\
-Therefore we would want to take into account these factors, such as the velocity, the battery voltage, and whether we were testing over the 
-entire track. However this would make the data we would want to visualize to have more than 2 dimensions, so we would
-have to use a dimensionality reduction algorithm to reduce the data to 2 dimensions that is plottable. We first try to use
-Principal Component Analysis (PCA) to reduce the data to 2 dimensions.
-\begin{center}
-    \includegraphics*[scale=0.3]{KpKiAllPCA.png}
-\end{center}
-As we can see, the PCA algorithm did not work well. Therefore lets try to use t-SNE to reduce the data to 2 dimensions.
-\begin{center}
-    \includegraphics*[scale=0.3]{KpKiAllTSNE.png}
-\end{center}
-This algorithm seems to work well, and it seems like the data is organized into 2-3 clusters. Therefore let us cluster 
-it with K-means at see the average acceptablity for each cluster. K means for 3 clusters classifies the data as the following:
-\begin{center}
-    \includegraphics*[scale=0.3]{KpKiAllTSNEKMeans.png}
-\end{center}
-Therefore, K means does successfully classify the data into the 3 clusters we would expect. The average for the Acceptibility and 
-Oscillation metrics for each cluster are plotted below as a bar graph. 
-\begin{center}
-\includegraphics*[scale=0.3]{KpKiAllTSNEKMeansAverage.png}
-\end{center}
+them for 100 speed that could complete everything but the initial chicane.
+\\\\
+To try to determine the optimal $k_p$ and $k_d$ for different velocities we 
+plotted the $k_p$ and $k_d$ normalized by the velocities.\\
+\includegraphics*[scale=0.3]{KpKiAllNormalized.png}\\
+As we can see it seems like the optimal $k_p$ and $k_d$ are around $k_p=0.17v_{base}$ and $k_d=0.5$ for 50 speed and $k_p=0.5$ and $k_d=0.5$ for 100 speed.
+
+Now we tried the piecewise method, the following plot illustrates, acceptability and oscillation for different number of piecewise PID controllers.
+\includegraphics*[scale=0.3]{PiecewiseOscilationsAcceptability.png}
+
 Note that this makes sense due to the three sections of development we had with intiially tuning the car to a singular speed, then with two speeds, and 
 finally with three speeds for the three differnet sections of the track. We see that indeed, the piecewise PID controller with three sections had the best performance.
 Organizing the data for each of these three method, we get three tables, as shown below:
