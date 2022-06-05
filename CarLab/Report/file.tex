@@ -77,13 +77,12 @@ the car performed. The first metric was Oscillations, quantified from 5 (full os
 based on both the speed of the car, the time it took to complete the track, and how close it came to 
 completing the track if it did not. \\\\
 To analyze how the $k_p$ and $k_d$ values affected these two metrics we plotted a scatter graph of the oscilation and acceptablity
-for all the values of $k_p$ and $k_d$ we experimented with, regardless of the base speed.
+for all the values of $k_p$ and $k_d$ we experimented with, regardless of the base speed. In other words, the parameters
+we controlled where $k_p$ and $k_d$, while the response variables we measured were oscillation and acceptability, both of which were quantified. 
+
 \begin{center}
-\begin{figure}[h!]
-    \centering
-    \includegraphics*[scale=0.3]{KpKiAll.png}
-    \caption{$K_p$ vs $K_d$}
-\end{figure}
+\centering
+\includegraphics*[scale=0.3]{KpKiAll.png}
 \end{center}
 However this does not take into account our development path. 
 We first attempted to control the car with PID at 50 speed. Once this succeeded we increased the speed to 
@@ -113,15 +112,58 @@ Oscillation metrics for each cluster are plotted below as a bar graph.
 \includegraphics*[scale=0.3]{KpKiAllTSNEKMeansAverage.png}
 \end{center}
 Note that this makes sense due to the three sections of development we had with intiially tuning the car to a singular speed, then with two speeds, and 
-finally with three speeds for the three differnet sections of the track. 
+finally with three speeds for the three differnet sections of the track. We see that indeed, the piecewise PID controller with three sections had the best performance.
+Organizing the data for each of these three method, we get three tables, as shown below:
+\begin{center}
+    \includegraphics*[scale=0.3]{Table1.png}
+\end{center}
+\begin{center}
+    \includegraphics*[scale=0.5]{Table2.png}
+\end{center}
+\begin{center}
+    \includegraphics*[scale=0.5]{Table3.png}
+\end{center}
+
+We see from these tables that our best results were indeed, as per our earlier plots, the piecewise PID with three sections. \newline
+Next, we attempted to understand how much the voltage of the car had affected our performance. To do this, we only considerd runs that were repeate with different voltage values; however, there were only three such runs, shown below in a table.
+As such, our data was inconclusive. However, from simple observation, it appeared to us that when the voltage had decreased, the car itself seemed to run slower. 
+Also, although a graph wouldn't be useful in analyzing only five trials, we observe that with higher voltages, oscillations also tend to increase, possibly attributed to the increased speed. However, once again, our data is insufficent to draw any conclusions.
+\begin{center}
+    \includegraphics*[scale=0.5]{Table4.png}
+\end{center}
+Next, we considered the effect of higher $k_D$ on oscillation given all else was kept constant. Such data entries are in a table below:
+\begin{center}
+    \includegraphics*[scale=0.5]{Table5.png}
+\end{center}
+Despite our limited samples, we can rewrite this table, considering the sign of Initial $k_D -$ Final $k_D$, and whether oscillations increased or decreased. 
+
+\begin{center}
+    \includegraphics*[scale=0.5]{Table6.png}
+\end{center}
+
+We see from our data that when all other factors in the system are kept constant,
+as $k_D$ increases, oscillations decrease, and as $k_D$ decreases, oscillations increase. Thus, we establish that these two variables must be inversely proportional to each other in some form.
+
+
 \section*{Interpretation}
-A notable run was our 3rd run with $k_p=5$ and $k_d=0$ as we had not implemented a derivative controller yet
-this run showed that we needed such a term, or we would have to reduce the speed of the car and $k_p$ in order to
-reduce the oscillations. 
+A notable run was our run on the 28th of May, where we were first testing our piecewise PID. The data for these runs is below:
+\begin{center}
+    \includegraphics*[scale=0.5]{Table7.png}
+\end{center}
+We had tried the same PID constants for six runs, and the car only succesfully made the path three out of six times. However, these same constants had worked for their individual sections consistently,
+so we attempted to figure out what the issue was. We noticed the battery voltage was $8.8$ V, and we noted that earlier, we'd seen changes in behavior of our car starting st $8.9$ V. 
+Next, we consdidered the fact that perhaps the car was changing in velocity too fast—these rapid changes in veloicty were throwing off the PID controller, as we simply change PID constants instantaneously when
+changing speeds, as well as change speed instantaneously. We also considered the fact that it was consistently failing at the same spot: the large curve. This could possibly mean that we needed another section with
+new speeds and PID constants for this section for more consistency. With these three options in mind, we continued testing. 
 
 \section*{Conclusion}
-From this run mentioned and the runs preceding and after it, we developed the following algorithm to tune the
-$k_p$ and $k_d$: increase $k_p$ until oscillations developed, then increase $k_d$ until the oscillations stoppped.
-and then repeating these two steps until the car was able to achieve the objective for this controller.
+From these runs onwards, we see in our data logs that we changed the batteries, apparent from the voltage increasing from $8.8$ V to $9.1$ V. Also, we slightly changed our code to add a "ramp-up", or a gradual change in speed
+rather than instantaneously changing speed, giving us the following runs:
+\begin{center}
+    \includegraphics*[scale=0.5]{Table8.png}
+\end{center}
+However, even then, we see that our issue was only partially resolved, as acceptability did indeed go up, but we still did not complete the track consistently.
+At this point, we see in our data logs that we made the decison to implement our three-part PID controller, which we have seen in our analysis is indeed the most effective at consistently completing the track, with the highest 
+average acceptability. 
 \end{multicols}
 \end{document}

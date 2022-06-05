@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.4.18)  4 JUN 2022 17:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.4.18)  4 JUN 2022 18:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -262,7 +262,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 55--64
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 74--81
+Underfull \hbox (badness 10000) in paragraph at lines 74--82
 
  []
 
@@ -270,76 +270,115 @@ Underfull \hbox (badness 10000) in paragraph at lines 74--81
 <KpKiAll.png, id=21, 722.7pt x 361.35pt>
 File: KpKiAll.png Graphic file (type png)
 <use KpKiAll.png>
-Package pdftex.def Info: KpKiAll.png  used on input line 82.
+Package pdftex.def Info: KpKiAll.png  used on input line 85.
 (pdftex.def)             Requested size: 216.81166pt x 108.40584pt.
 
-Overfull \hbox (26.81166pt too wide) in paragraph at lines 82--83
+Overfull \hbox (26.81166pt too wide) in paragraph at lines 85--86
  [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--94
+Underfull \hbox (badness 10000) in paragraph at lines 87--97
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--94
+Underfull \hbox (badness 10000) in paragraph at lines 87--97
 
  []
 
 <KpKiAllPCA.png, id=23, 722.7pt x 361.35pt>
 File: KpKiAllPCA.png Graphic file (type png)
 <use KpKiAllPCA.png>
-Package pdftex.def Info: KpKiAllPCA.png  used on input line 95.
+Package pdftex.def Info: KpKiAllPCA.png  used on input line 98.
 (pdftex.def)             Requested size: 216.81166pt x 108.40584pt.
 
-Overfull \hbox (26.81166pt too wide) in paragraph at lines 95--96
+Overfull \hbox (26.81166pt too wide) in paragraph at lines 98--99
  [] 
  []
 
-<KpKiAllTSNE.png, id=25, 722.7pt x 361.35pt>
+[3 </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAll.png>]
+<KpKiAllTSNE.png, id=30, 722.7pt x 361.35pt>
 File: KpKiAllTSNE.png Graphic file (type png)
 <use KpKiAllTSNE.png>
-Package pdftex.def Info: KpKiAllTSNE.png  used on input line 99.
+Package pdftex.def Info: KpKiAllTSNE.png  used on input line 102.
 (pdftex.def)             Requested size: 216.81166pt x 108.40584pt.
 
-Overfull \hbox (26.81166pt too wide) in paragraph at lines 99--100
+Overfull \hbox (26.81166pt too wide) in paragraph at lines 102--103
  [] 
  []
 
-[3 </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAll.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllPCA.png>]
-<KpKiAllTSNEKMeans.png, id=34, 722.7pt x 361.35pt>
+<KpKiAllTSNEKMeans.png, id=32, 722.7pt x 361.35pt>
 File: KpKiAllTSNEKMeans.png Graphic file (type png)
 <use KpKiAllTSNEKMeans.png>
-Package pdftex.def Info: KpKiAllTSNEKMeans.png  used on input line 104.
+Package pdftex.def Info: KpKiAllTSNEKMeans.png  used on input line 107.
 (pdftex.def)             Requested size: 216.81166pt x 108.40584pt.
 
-Overfull \hbox (26.81166pt too wide) in paragraph at lines 104--105
+Overfull \hbox (26.81166pt too wide) in paragraph at lines 107--108
  [] 
  []
 
-<KpKiAllTSNEKMeansAverage.png, id=36, 361.35pt x 722.7pt>
+<KpKiAllTSNEKMeansAverage.png, id=34, 361.35pt x 722.7pt>
 File: KpKiAllTSNEKMeansAverage.png Graphic file (type png)
 <use KpKiAllTSNEKMeansAverage.png>
-Package pdftex.def Info: KpKiAllTSNEKMeansAverage.png  used on input line 109.
+Package pdftex.def Info: KpKiAllTSNEKMeansAverage.png  used on input line 112.
 (pdftex.def)             Requested size: 108.40584pt x 216.81166pt.
-
-Overfull \vbox (2.17842pt too high) has occurred while \output is active []
-
- [4 </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNE.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNEKMeans.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNEKMeansAverage.png>] (/Users/ineshchakrabarti/ece3/CarLab/Report/file.aux) ) 
+<Table1.png, id=36, 239.89626pt x 412.54124pt>
+File: Table1.png Graphic file (type png)
+<use Table1.png>
+Package pdftex.def Info: Table1.png  used on input line 118.
+(pdftex.def)             Requested size: 71.96942pt x 123.76332pt.
+[4 </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllPCA.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNE.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNEKMeans.png> </Users/ineshchakrabarti/ece3/CarLab/Report/KpKiAllTSNEKMeansAverage.png>]
+<Table2.png, id=49, 268.00125pt x 161.60374pt>
+File: Table2.png Graphic file (type png)
+<use Table2.png>
+Package pdftex.def Info: Table2.png  used on input line 121.
+(pdftex.def)             Requested size: 134.00029pt x 80.80167pt.
+<Table3.png, id=51, 350.30875pt x 130.4875pt>
+File: Table3.png Graphic file (type png)
+<use Table3.png>
+Package pdftex.def Info: Table3.png  used on input line 124.
+(pdftex.def)             Requested size: 175.15395pt x 65.24358pt.
+<Table4.png, id=53, 260.975pt x 97.36375pt>
+File: Table4.png Graphic file (type png)
+<use Table4.png>
+Package pdftex.def Info: Table4.png  used on input line 132.
+(pdftex.def)             Requested size: 130.48718pt x 48.68175pt.
+<Table5.png, id=55, 293.095pt x 114.4275pt>
+File: Table5.png Graphic file (type png)
+<use Table5.png>
+Package pdftex.def Info: Table5.png  used on input line 136.
+(pdftex.def)             Requested size: 146.54713pt x 57.21361pt.
+<Table6.png, id=57, 266.9975pt x 115.43124pt>
+File: Table6.png Graphic file (type png)
+<use Table6.png>
+Package pdftex.def Info: Table6.png  used on input line 141.
+(pdftex.def)             Requested size: 133.49841pt x 57.71547pt.
+ [5 </Users/ineshchakrabarti/ece3/CarLab/Report/Table1.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table2.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table3.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table4.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table5.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table6.png>]
+<Table7.png, id=74, 317.185pt x 125.46875pt>
+File: Table7.png Graphic file (type png)
+<use Table7.png>
+Package pdftex.def Info: Table7.png  used on input line 151.
+(pdftex.def)             Requested size: 158.5921pt x 62.7342pt.
+<Table8.png, id=76, 331.2375pt x 96.36pt>
+File: Table8.png Graphic file (type png)
+<use Table8.png>
+Package pdftex.def Info: Table8.png  used on input line 163.
+(pdftex.def)             Requested size: 165.61833pt x 48.17987pt.
+ [6 </Users/ineshchakrabarti/ece3/CarLab/Report/Table7.png> </Users/ineshchakrabarti/ece3/CarLab/Report/Table8.png>] (/Users/ineshchakrabarti/ece3/CarLab/Report/file.aux) ) 
 Here is how much of TeX's memory you used:
- 3640 strings out of 478268
- 62470 string characters out of 5846347
- 360031 words of memory out of 5000000
- 21846 multiletter control sequences out of 15000+600000
+ 3696 strings out of 478268
+ 63278 string characters out of 5846347
+ 361053 words of memory out of 5000000
+ 21894 multiletter control sequences out of 15000+600000
  474526 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  67i,5n,77p,340b,302s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on /Users/ineshchakrabarti/ece3/CarLab/Report/file.pdf (5 pages, 179117 bytes).
+Output written on /Users/ineshchakrabarti/ece3/CarLab/Report/file.pdf (7 pages, 641493 bytes).
 PDF statistics:
- 73 PDF objects out of 1000 (max. 8388607)
- 36 compressed objects within 1 object stream
+ 113 PDF objects out of 1000 (max. 8388607)
+ 50 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 149 words of extra memory for PDF output out of 10000 (max. 10000000)
 
