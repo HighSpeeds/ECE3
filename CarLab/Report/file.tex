@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 \title{ECE 11L Lab Report 1}
 
-\author{Lawrence Liu}
+\author{Lawrence Liu and Inesh CHakrabarti}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{subcaption}
@@ -37,12 +37,12 @@
    \end{center}
 \end{titlepage}
 \section*{Acknowledgements}
-We would like to acknowledge and extend my sincere thanks to Dr. Dennis Briggs who made this project possible.
+We would like to acknowledge and extend our sincere thanks to Dr. Dennis Briggs who made this project possible.
 His knowledge of the subject, guidance, and support through the whole quarter carried us through this project.
-We would also like the acknowledge our TAs Dhruv Srinivas and Xin Li for your brilliant comments and suggestions. Furthermore we 
+We would also like the acknowledge our TAs Dhruv Srinivas and Xin Li for their brilliant comments and suggestions. Furthermore we 
 would like to thank from the bottom of our hearts our wonderful mentors Alexis Aleksandrovich Samoylov and Vaibhav Gupta for their guidance and support.
 \\\\
-Finally we would also want to thank our families, without them none of this would be possible.
+Finally we would also want to thank our families, without whom none of this would be possible.
 \pagebreak
 \begin{multicols}{2}
 \section*{Introduction}
@@ -79,7 +79,11 @@ completing the track if it did not. \\\\
 To analyze how the $k_p$ and $k_d$ values affected these two metrics we plotted a scatter graph of the oscilation and acceptablity
 for all the values of $k_p$ and $k_d$ we experimented with, regardless of the base speed.
 \begin{center}
-\includegraphics*[scale=0.3]{KpKiAll.png}
+\begin{figure}[h!]
+    \centering
+    \includegraphics*[scale=0.3]{KpKiAll.png}
+    \caption{$K_p$ vs $K_d$}
+\end{figure}
 \end{center}
 However this does not take into account our development path. 
 We first attempted to control the car with PID at 50 speed. Once this succeeded we increased the speed to 
@@ -104,10 +108,12 @@ it with K-means at see the average acceptablity for each cluster. K means for 3 
     \includegraphics*[scale=0.3]{KpKiAllTSNEKMeans.png}
 \end{center}
 Therefore, K means does successfully classify the data into the 3 clusters we would expect. The average for the Acceptibility and 
-Oscillation metrics for each cluster are plotted below as a bar graph.
+Oscillation metrics for each cluster are plotted below as a bar graph. 
 \begin{center}
 \includegraphics*[scale=0.3]{KpKiAllTSNEKMeansAverage.png}
 \end{center}
+Note that this makes sense due to the three sections of development we had with intiially tuning the car to a singular speed, then with two speeds, and 
+finally with three speeds for the three differnet sections of the track. 
 \section*{Interpretation}
 A notable run was our 3rd run with $k_p=5$ and $k_d=0$ as we had not implemented a derivative controller yet
 this run showed that we needed such a term, or we would have to reduce the speed of the car and $k_p$ in order to
